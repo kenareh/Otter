@@ -98,6 +98,8 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IPolicyFactory, PolicyFactory>();
                 services.AddScoped<IProvinceFactory, ProvinceFactory>();
                 services.AddScoped<ICityFactory, CityFactory>();
+                services.AddScoped<IPremiumInquiryService, PremiumInquiryService>();
+                services.AddScoped<IDiscountService, DiscountService>();
             }
             else
             {

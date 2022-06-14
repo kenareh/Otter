@@ -12,11 +12,11 @@ namespace Otter.DataAccess.SQLServer
         private IPolicyRepository _policyRepository;
         private IProvinceRepository _provinceRepository;
         private ICityRepository _cityRepository;
+        private IDiscountRepository _discountRepository;
 
-        public SqlUnitOfWork(ApplicationDbContext dbContext, IPolicyRepository policyRepository)
+        public SqlUnitOfWork(ApplicationDbContext dbContext)
         {
             context = dbContext;
-            _policyRepository = policyRepository;
         }
 
         public void Dispose()
@@ -27,6 +27,7 @@ namespace Otter.DataAccess.SQLServer
         public IPolicyRepository PolicyRepository => _policyRepository ??= new PolicyRepository(context);
         public IProvinceRepository ProvinceRepository => _provinceRepository ??= new ProvinceRepository(context);
         public ICityRepository CityRepository => _cityRepository ??= new CityRepository(context);
+        public IDiscountRepository DiscountRepository => _discountRepository ??= new DiscountRepository(context);
 
         /// <exception cref="DatabaseException">Condition.</exception>
         public void Commit()

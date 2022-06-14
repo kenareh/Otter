@@ -20,6 +20,7 @@ namespace Otter.DataAccess
         IPolicyRepository PolicyRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
         ICityRepository CityRepository { get; }
+        IDiscountRepository DiscountRepository { get; }
 
         /// <summary>
         /// Commits all changes to database.

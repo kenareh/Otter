@@ -9,6 +9,10 @@ namespace Otter.Common.Exceptions
 
         public Type Type { get; set; }
 
+        public EntityNotFoundException(string message) : base(message)
+        {
+        }
+
         public EntityNotFoundException(string fieldName, string query, Type type)
         {
             FieldName = fieldName;

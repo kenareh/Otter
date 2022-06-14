@@ -3,9 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-// ReSharper disable once CheckNamespace
-
-namespace Sample.Common.Tools
+namespace Otter.Common.Tools
 {
     public static class EnumDescription
     {

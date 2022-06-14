@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Otter.Common.Enums;
-using Sample.Common.Tools;
 
 namespace Otter.Common.Tools
 {
