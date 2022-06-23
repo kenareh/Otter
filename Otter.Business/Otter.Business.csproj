@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Otter.Common\Otter.Common.csproj" />
     <ProjectReference Include="..\Otter.DataAccess\Otter.DataAccess.csproj" />
+    <ProjectReference Include="..\Otter.ExternalService\Otter.ExternalService.csproj" />
   </ItemGroup>
 
 </Project>

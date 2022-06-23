@@ -14,6 +14,8 @@ namespace Otter.Common.Entities
         [MaxLength(12)]
         public string Mobile { get; set; }
 
+        public bool IsMobileConfirmed { get; set; }
+
         [MaxLength(6)]
         public string Otp { get; set; }
 

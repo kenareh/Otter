@@ -12,6 +12,8 @@ using Otter.Business.Implementations.Factories;
 using Otter.Business.Implementations.Services;
 using Otter.DataAccess;
 using Otter.DataAccess.SQLServer;
+using Otter.ExternalService.Sms;
+using Otter.ExternalService.Utilities;
 
 namespace Otter.HttpEndPoint
 {
@@ -101,6 +103,8 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IPremiumInquiryService, PremiumInquiryService>();
                 services.AddScoped<IDiscountService, DiscountService>();
                 services.AddScoped<IConfigurationService, ConfigurationService>();
+                services.AddScoped<ISmsService, SmsService>();
+                services.AddScoped<IInternalClientService, InternalClientService>();
             }
             else
             {

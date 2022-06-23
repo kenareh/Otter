@@ -1,9 +1,17 @@
-﻿using Otter.Business.Dtos;
+﻿using System;
+using System.Threading.Tasks;
+using Otter.Business.Dtos;
 
 namespace Otter.Business.Definitions.Services
 {
     public interface IPolicyService
     {
-        PolicyDto InsertBasicInformation(BasicInformationRequestDto dto);
+        Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto);
+
+        PolicyDto Get(Guid guid);
+
+        PolicyDto MobileConfirmByOtp(Guid guid, string otp);
+
+        PolicyDto AddImei(Guid guid, string imei);
     }
 }

@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Otter.Business\Otter.Business.csproj" />
     <ProjectReference Include="..\Otter.DataAccess.SQLServer\Otter.DataAccess.SQLServer.csproj" />
     <ProjectReference Include="..\Otter.DataAccess\Otter.DataAccess.csproj" />
+    <ProjectReference Include="..\Otter.ExternalService\Otter.ExternalService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

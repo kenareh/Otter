@@ -17,7 +17,8 @@ namespace Otter.Business.Implementations.Factories
                 ModelId = dto.ModelId,
                 Guid = Guid.NewGuid(),
                 GuarantyStatus = dto.GuarantyStatus,
-                Price = dto.Price
+                Price = dto.Price,
+                IsMobileConfirmed = false
             };
 
             return policy;
