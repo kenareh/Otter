@@ -29,6 +29,7 @@ namespace Otter.DataAccess.SQLServer
         public DbSet<Province> Provinces { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Discount> Discounts { get; set; }
+        public DbSet<Configuration> Configurations { get; set; }
 
         #region Clean String
 

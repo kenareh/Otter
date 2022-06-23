@@ -100,6 +100,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<ICityFactory, CityFactory>();
                 services.AddScoped<IPremiumInquiryService, PremiumInquiryService>();
                 services.AddScoped<IDiscountService, DiscountService>();
+                services.AddScoped<IConfigurationService, ConfigurationService>();
             }
             else
             {

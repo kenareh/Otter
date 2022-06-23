@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Otter.Common.Entities.BaseEntities;
 
 namespace Otter.Common.Entities
@@ -6,7 +7,9 @@ namespace Otter.Common.Entities
     [Table("Cities", Schema = "Base")]
     public class City : BaseEntity<long>
     {
+        [MaxLength(100)]
         public string Name { get; set; }
+
         public long ProvinceId { get; set; }
         public virtual Province Province { get; set; }
     }

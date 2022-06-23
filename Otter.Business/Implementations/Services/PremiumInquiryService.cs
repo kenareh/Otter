@@ -7,15 +7,18 @@ namespace Otter.Business.Implementations.Services
     public class PremiumInquiryService : IPremiumInquiryService
     {
         private IDiscountService _discountService;
+        private IConfigurationService _configurationService;
 
-        public PremiumInquiryService(IDiscountService discountService)
+        public PremiumInquiryService(IDiscountService discountService, IConfigurationService configurationService)
         {
             _discountService = discountService;
+            _configurationService = configurationService;
         }
 
         public InquiryResultDto PremiumInquiry(InquiryRequestDto dto)
         {
-            var basePremium = Convert.ToInt64(dto.Price * 0.03); //todo : from database
+            var premiumRate = _configurationService.GetPremiumRate();
+            var basePremium = Convert.ToInt64(dto.Price * premiumRate);
 
             var discount = _discountService.Calculate(dto.DiscountCode, basePremium);
 
@@ -24,7 +27,7 @@ namespace Otter.Business.Implementations.Services
                 FinalPremium = basePremium - discount,
                 BasePremium = basePremium,
                 Discount = discount,
-                PremiumRate = .03//todo : from database
+                PremiumRate = premiumRate
             };
         }
     }
