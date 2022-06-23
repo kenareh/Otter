@@ -1,0 +1,13 @@
+﻿using System.ComponentModel;
+
+namespace Otter.Common.Enums
+{
+    public enum PolicyFileType
+    {
+        [Description("IMEI")]
+        Imei = 1,
+
+        [Description("جعبه موبایل")]
+        PhoneBox = 2
+    }
+}

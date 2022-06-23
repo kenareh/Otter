@@ -18,7 +18,7 @@ namespace Otter.DataAccess.SQLServer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
+            modelBuilder.ApplyConfiguration(new ConfigurationEntityConfiguration());
         }
 
         public DbSet<Currency> Currencies { get; set; }
@@ -30,6 +30,7 @@ namespace Otter.DataAccess.SQLServer
         public DbSet<City> Cities { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Configuration> Configurations { get; set; }
+        public DbSet<PolicyFile> PolicyFiles { get; set; }
 
         #region Clean String
 

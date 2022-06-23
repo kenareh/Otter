@@ -14,6 +14,7 @@ namespace Otter.DataAccess.SQLServer
         private ICityRepository _cityRepository;
         private IDiscountRepository _discountRepository;
         private IConfigurationRepository _configurationRepository;
+        private IPolicyFileRepository _policyFileRepository;
 
         public SqlUnitOfWork(ApplicationDbContext dbContext)
         {
@@ -30,6 +31,7 @@ namespace Otter.DataAccess.SQLServer
         public ICityRepository CityRepository => _cityRepository ??= new CityRepository(context);
         public IDiscountRepository DiscountRepository => _discountRepository ??= new DiscountRepository(context);
         public IConfigurationRepository ConfigurationRepository => _configurationRepository ??= new ConfigurationRepository(context);
+        public IPolicyFileRepository PolicyFileRepository => _policyFileRepository ??= new PolicyFileRepository(context);
 
         /// <exception cref="DatabaseException">Condition.</exception>
         public void Commit()

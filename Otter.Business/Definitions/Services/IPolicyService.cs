@@ -12,6 +12,12 @@ namespace Otter.Business.Definitions.Services
 
         PolicyDto MobileConfirmByOtp(Guid guid, string otp);
 
-        PolicyDto AddImei(Guid guid, string imei);
+        PolicyDto AddImeiFile(Guid guid, string imeiFileBase64);
+
+        PolicyFileDto GetImeiFile(Guid guid);
+
+        PolicyDto AddBoxImageFile(Guid guid, string imeiFileBase64);
+
+        PolicyFileDto GetBoxImageFile(Guid guid);
     }
 }

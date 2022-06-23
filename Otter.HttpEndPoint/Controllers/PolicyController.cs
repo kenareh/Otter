@@ -63,9 +63,9 @@ namespace Otter.HttpEndPoint.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("mobile-confirmation/{guid}/{otp}")]
-        public ActionResult<PolicyDto> PostBasicInformation(Guid guid, string otp)
+        [HttpPut]
+        [Route("{guid}/mobile-confirmation/{otp}")]
+        public ActionResult<PolicyDto> MobileConfirmation(Guid guid, string otp)
         {
             try
             {
@@ -87,13 +87,93 @@ namespace Otter.HttpEndPoint.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("mobile-confirmation/{guid}/{imei}")]
-        public ActionResult<PolicyDto> PostImei(Guid guid, string imei)
+        [HttpPut]
+        [Route("{guid}/imei/{imei}")]
+        public ActionResult<PolicyDto> Imei(Guid guid, string imei)
         {
             try
             {
-                var result = _policyService.AddImei(guid, imei);
+                var result = _policyService.AddImeiFile(guid, imei);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/files/imei/{base64Imei}")]
+        public ActionResult<PolicyDto> AddImeiFile(Guid guid, FilePolicyInsertDto dto)
+        {
+            try
+            {
+                var result = _policyService.AddImeiFile(guid, dto.Base64Image);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
+        [Route("{guid}/files/imei")]
+        public ActionResult<PolicyDto> GetImeiFile(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.GetImeiFile(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/files/box-image/{base64Imei}")]
+        public ActionResult<PolicyDto> AddBoxImageFile(Guid guid, FilePolicyInsertDto dto)
+        {
+            try
+            {
+                var result = _policyService.AddBoxImageFile(guid, dto.Base64Image);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
+        [Route("{guid}/files/box-image")]
+        public ActionResult<PolicyDto> GetBoxImageFile(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.GetBoxImageFile(guid);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)

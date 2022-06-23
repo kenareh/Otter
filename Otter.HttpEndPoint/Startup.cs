@@ -105,6 +105,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IConfigurationService, ConfigurationService>();
                 services.AddScoped<ISmsService, SmsService>();
                 services.AddScoped<IInternalClientService, InternalClientService>();
+                services.AddScoped<IPolicyFileFactory, PolicyFileFactory>();
             }
             else
             {

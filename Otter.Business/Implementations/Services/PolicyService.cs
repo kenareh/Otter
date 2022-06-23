@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Factories;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
+using Otter.Common.Entities;
+using Otter.Common.Enums;
 using Otter.Common.Exceptions;
 using Otter.DataAccess;
 using Otter.ExternalService.Sms;
@@ -19,13 +21,15 @@ namespace Otter.Business.Implementations.Services
         private IUnitOfWork _unitOfWork;
         private IPolicyFactory _policyFactory;
         private ISmsService _smsService;
+        private IPolicyFileFactory _policyFileFactory;
 
-        public PolicyService(IUnitOfWork unitOfWork, IPolicyFactory policyFactory, ISmsService smsService, ILogger<PolicyService> logger)
+        public PolicyService(IUnitOfWork unitOfWork, IPolicyFactory policyFactory, ISmsService smsService, ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory)
         {
             _unitOfWork = unitOfWork;
             _policyFactory = policyFactory;
             _smsService = smsService;
             _logger = logger;
+            _policyFileFactory = policyFileFactory;
         }
 
         public async Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto)
@@ -84,12 +88,12 @@ namespace Otter.Business.Implementations.Services
             return _policyFactory.CreateDto(policy);
         }
 
-        public PolicyDto AddImei(Guid guid, string imei)
+        public PolicyDto AddImeiFile(Guid guid, string imeiFileBase64)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
             if (policy == null)
             {
-                throw new EntityNotFoundException("کد وارد شده معتبر نمی باشد.");
+                throw new EntityNotFoundException("یافت نشد.");
             }
 
             if (!policy.IsMobileConfirmed)
@@ -97,10 +101,101 @@ namespace Otter.Business.Implementations.Services
                 throw new EntityNotFoundException("یافت نشد.");
             }
 
-            policy.Imei = imei;
+            var lastImeiFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.Imei)
+                .FirstOrDefault();
+            if (lastImeiFile != null)
+            {
+                _unitOfWork.PolicyFileRepository.Remove(lastImeiFile);
+                _unitOfWork.Commit();
+            }
+
+            var newFile = new PolicyFile()
+            {
+                PolicyFileType = PolicyFileType.Imei,
+                PolicyId = policy.Id,
+                Base64 = imeiFileBase64
+            };
+            _unitOfWork.PolicyFileRepository.Add(newFile);
             _unitOfWork.Commit();
 
             return _policyFactory.CreateDto(policy);
+        }
+
+        public PolicyFileDto GetImeiFile(Guid guid)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (!policy.IsMobileConfirmed)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+            var lastImeiFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.Imei)
+                .FirstOrDefault();
+            if (lastImeiFile == null)
+            {
+                throw new EntityNotFoundException("فایل یافت نشد.");
+            }
+
+            return _policyFileFactory.CreateDto(lastImeiFile);
+        }
+
+        public PolicyDto AddBoxImageFile(Guid guid, string imeiFileBase64)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (!policy.IsMobileConfirmed)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            var lastBoxFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.PhoneBox)
+                .FirstOrDefault();
+            if (lastBoxFile != null)
+            {
+                _unitOfWork.PolicyFileRepository.Remove(lastBoxFile);
+                _unitOfWork.Commit();
+            }
+
+            var newFile = new PolicyFile()
+            {
+                PolicyFileType = PolicyFileType.PhoneBox,
+                PolicyId = policy.Id,
+                Base64 = imeiFileBase64
+            };
+            _unitOfWork.PolicyFileRepository.Add(newFile);
+            _unitOfWork.Commit();
+
+            return _policyFactory.CreateDto(policy);
+        }
+
+        public PolicyFileDto GetBoxImageFile(Guid guid)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (!policy.IsMobileConfirmed)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+            var lastBoxFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.PhoneBox)
+                .FirstOrDefault();
+            if (lastBoxFile == null)
+            {
+                throw new EntityNotFoundException("فایل یافت نشد.");
+            }
+
+            return _policyFileFactory.CreateDto(lastBoxFile);
         }
     }
 }

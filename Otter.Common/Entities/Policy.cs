@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Otter.Common.Entities.BaseEntities;
 using Otter.Common.Enums;
@@ -47,5 +48,6 @@ namespace Otter.Common.Entities
         public long CityId { get; set; }
         public virtual Model Model { get; set; }
         public virtual City City { get; set; }
+        public List<PolicyFile> PolicyFiles { get; set; }
     }
 }
