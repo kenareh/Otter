@@ -17,13 +17,13 @@ namespace Otter.Business.Implementations.Services
 
         public double GetPremiumRate()
         {
-            var value = _unitOfWork.ConfigurationRepository.Find(p => p.Key == "PremiumRate").FirstOrDefault();
-            if (value == null)
+            var configuration = _unitOfWork.ConfigurationRepository.Find(p => p.Key == "PremiumRate").FirstOrDefault();
+            if (configuration == null)
             {
                 throw new EntityNotFoundException("نرخ حق بیمه موجود نمی باشد");
             }
 
-            var rate = Convert.ToDouble(value);
+            var rate = Convert.ToDouble(configuration.Value);
             return rate;
         }
     }

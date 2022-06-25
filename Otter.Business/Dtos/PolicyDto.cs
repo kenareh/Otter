@@ -25,6 +25,13 @@ namespace Otter.Business.Dtos
         public string BirthDate { get; set; }
         public string Address { get; set; }
 
+        public int SpeakerTestAttempt { get; set; }
+        public bool SpeakerTestState { get; set; }
+        public bool MicrophoneTestState { get; set; }
+        public bool WhiteDotTestState { get; set; }
+        public bool DarkDotTestState { get; set; }
+        public bool SquareTouchTestState { get; set; }
+
         public BaseEnumDto PolicyState { get; set; }
         public long ModelId { get; set; }
         public long CityId { get; set; }

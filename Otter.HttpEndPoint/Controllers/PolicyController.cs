@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Services;
@@ -44,14 +45,21 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpPost]
         [Route("basic-information")]
-        public ActionResult<Guid> PostBasicInformation(BasicInformationRequestDto dto)
+        public async Task<ActionResult<Guid>> PostBasicInformation(BasicInformationRequestDto dto)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = _policyService.InsertBasicInformation(dto);
-                    return Ok(result);
+                    try
+                    {
+                        var result = await _policyService.InsertBasicInformation(dto);
+                        return Ok(result);
+                    }
+                    catch (EntityNotFoundException e)
+                    {
+                        return NotFound(e.Message);
+                    }
                 }
 
                 return BadRequest(ModelState);
@@ -108,7 +116,7 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpPut]
-        [Route("{guid}/files/imei/{base64Imei}")]
+        [Route("{guid}/files/imei")]
         public ActionResult<PolicyDto> AddImeiFile(Guid guid, FilePolicyInsertDto dto)
         {
             try
@@ -148,7 +156,7 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpPut]
-        [Route("{guid}/files/box-image/{base64Imei}")]
+        [Route("{guid}/files/box-image")]
         public ActionResult<PolicyDto> AddBoxImageFile(Guid guid, FilePolicyInsertDto dto)
         {
             try
@@ -174,6 +182,126 @@ namespace Otter.HttpEndPoint.Controllers
             try
             {
                 var result = _policyService.GetBoxImageFile(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPost]
+        [Route("{guid}/speaker-test/{number}")]
+        public ActionResult<bool> SpeakerTest(Guid guid, int number)
+        {
+            try
+            {
+                var result = _policyService.SpeakerTest(guid, number);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/files/microphone-test")]
+        public ActionResult<PolicyDto> AddMicrophoneTest(Guid guid, FilePolicyInsertDto dto)
+        {
+            try
+            {
+                var result = _policyService.AddMicrophoneTestFile(guid, dto.Base64Image);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
+        [Route("{guid}/files/microphone-test")]
+        public ActionResult<PolicyDto> GetMicrophoneTestFile(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.GetMicrophoneTestFile(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/white-dot-test")]
+        public ActionResult<bool> WhiteDotTest(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.WhiteDotTest(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/dark-dot-test")]
+        public ActionResult<bool> DarkDotTest(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.DarkDotTest(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/square-touch-test")]
+        public ActionResult<bool> SquareTouchTest(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.SquareTouchTest(guid);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)

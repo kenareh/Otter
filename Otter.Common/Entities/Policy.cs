@@ -44,10 +44,29 @@ namespace Otter.Common.Entities
         public string Address { get; set; }
 
         public PolicyState PolicyState { get; set; }
+
+        public long BasePremium { get; set; }
+        public long FinalPremium { get; set; }
+        public long Discount { get; set; }
+        public string DiscountCode { get; set; }
+
+        public double PremiumRate { get; set; }
+
+        public int SpeakerTestAttempt { get; set; }
+        public bool SpeakerTestState { get; set; }
+        public bool MicrophoneTestState { get; set; }
+        public bool WhiteDotTestState { get; set; }
+        public bool DarkDotTestState { get; set; }
+        public bool SquareTouchTestState { get; set; }
+
         public long ModelId { get; set; }
-        public long CityId { get; set; }
+        public long? CityId { get; set; }
+        public long SpeakerTestNumberId { get; set; }
+
         public virtual Model Model { get; set; }
         public virtual City City { get; set; }
+        public virtual SpeakerTestNumber SpeakerTestNumber { get; set; }
+
         public List<PolicyFile> PolicyFiles { get; set; }
     }
 }

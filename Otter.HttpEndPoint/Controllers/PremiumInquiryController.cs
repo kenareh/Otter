@@ -21,7 +21,7 @@ namespace Otter.HttpEndPoint.Controllers
         [Route("")]
         public ActionResult<InquiryResultDto> Post(InquiryRequestDto dto)
         {
-            var result = _premiumInquiryService.PremiumInquiry(dto);
+            var result = _premiumInquiryService.PremiumInquiry(dto, false);
             return Ok(result);
         }
     }

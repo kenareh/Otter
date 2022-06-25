@@ -1,6 +1,7 @@
 ﻿using System;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
+using Otter.Common.Tools;
 
 namespace Otter.Business.Implementations.Services
 {
@@ -15,12 +16,18 @@ namespace Otter.Business.Implementations.Services
             _configurationService = configurationService;
         }
 
-        public InquiryResultDto PremiumInquiry(InquiryRequestDto dto)
+        public InquiryResultDto PremiumInquiry(InquiryRequestDto dto, bool isActualUseForPolicy)
         {
             var premiumRate = _configurationService.GetPremiumRate();
             var basePremium = Convert.ToInt64(dto.Price * premiumRate);
 
-            var discount = _discountService.Calculate(dto.DiscountCode, basePremium);
+
+            long discount=0;
+
+            if (!dto.DiscountCode.IsNullOrEmpty())
+            {
+                discount = _discountService.Calculate(dto.DiscountCode, basePremium, isActualUseForPolicy);
+            }
 
             return new InquiryResultDto()
             {

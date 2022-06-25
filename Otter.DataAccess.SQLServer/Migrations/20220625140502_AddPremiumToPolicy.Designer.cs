@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Otter.DataAccess.SQLServer;
 
 namespace Otter.DataAccess.SQLServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220625140502_AddPremiumToPolicy")]
+    partial class AddPremiumToPolicy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,9 +237,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Property<long?>("CityId")
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("DarkDotTestState")
-                        .HasColumnType("bit");
-
                     b.Property<long>("Discount")
                         .HasColumnType("bigint");
 
@@ -267,9 +266,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("MicrophoneTestState")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Mobile")
                         .HasMaxLength(12)
@@ -305,12 +301,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("SpeakerTestState")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SquareTouchTestState")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("WhiteDotTestState")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");

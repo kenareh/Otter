@@ -19,7 +19,7 @@ namespace Otter.Common.Entities
 
         public DiscountUsageType DiscountUsageType { get; set; }
         public int? LimitedCount { get; set; }
-        public int? RemainingLimitedCount { get; set; }
+        public int RemainingLimitedCount { get; set; }
 
         public bool IsActive { get; set; }
     }

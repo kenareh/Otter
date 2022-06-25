@@ -2,6 +2,6 @@
 {
     public interface IDiscountService
     {
-        long Calculate(string discountCode, long basePremium);
+        long Calculate(string discountCode, long basePremium, bool isActualUseForPolicy);
     }
 }

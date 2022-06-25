@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Otter.DataAccess.SQLServer;
 
 namespace Otter.DataAccess.SQLServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220625133400_AddVoiceSpeaker")]
+    partial class AddVoiceSpeaker
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,7 +135,7 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Property<int?>("PercentDiscount")
                         .HasColumnType("int");
 
-                    b.Property<int>("RemainingLimitedCount")
+                    b.Property<int?>("RemainingLimitedCount")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("StartDate")
@@ -221,9 +223,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<long>("BasePremium")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("BirthDate")
                         .HasMaxLength(50)
                         .HasColumnType("datetime2");
@@ -232,19 +231,7 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<long?>("CityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("DarkDotTestState")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("Discount")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DiscountCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("FinalPremium")
+                    b.Property<long>("CityId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Firstname")
@@ -268,9 +255,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("MicrophoneTestState")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Mobile")
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
@@ -292,9 +276,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Property<int>("PolicyState")
                         .HasColumnType("int");
 
-                    b.Property<double>("PremiumRate")
-                        .HasColumnType("float");
-
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
 
@@ -305,12 +286,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("SpeakerTestState")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SquareTouchTestState")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("WhiteDotTestState")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -410,7 +385,9 @@ namespace Otter.DataAccess.SQLServer.Migrations
                 {
                     b.HasOne("Otter.Common.Entities.City", "City")
                         .WithMany()
-                        .HasForeignKey("CityId");
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Otter.Common.Entities.Model", "Model")
                         .WithMany()

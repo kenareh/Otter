@@ -8,6 +8,9 @@ namespace Otter.Common.Enums
         Imei = 1,
 
         [Description("جعبه موبایل")]
-        PhoneBox = 2
+        PhoneBox = 2,
+
+        [Description("تست میکروفون")]
+        MicrophoneVoice = 3
     }
 }

@@ -19,5 +19,17 @@ namespace Otter.Business.Definitions.Services
         PolicyDto AddBoxImageFile(Guid guid, string imeiFileBase64);
 
         PolicyFileDto GetBoxImageFile(Guid guid);
+
+        bool SpeakerTest(Guid policyGuid, int number);
+
+        PolicyDto AddMicrophoneTestFile(Guid guid, string microphoneBase64Voice);
+
+        PolicyFileDto GetMicrophoneTestFile(Guid guid);
+
+        PolicyDto WhiteDotTest(Guid guid);
+
+        PolicyDto DarkDotTest(Guid guid);
+
+        PolicyDto SquareTouchTest(Guid guid);
     }
 }

@@ -22,5 +22,8 @@ namespace Otter.Business.Dtos
         [Display(Name = "وضعیت گارانتی")]
         [Required(ErrorMessage = "ورود {0} الزامی می باشد.", AllowEmptyStrings = false)]
         public bool GuarantyStatus { get; set; }
+
+        [Display(Name = "کد تخفیف")]
+        public string DiscountCode { get; set; }
     }
 }

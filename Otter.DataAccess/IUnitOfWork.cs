@@ -23,6 +23,7 @@ namespace Otter.DataAccess
         IDiscountRepository DiscountRepository { get; }
         IConfigurationRepository ConfigurationRepository { get; }
         IPolicyFileRepository PolicyFileRepository { get; }
+        ISpeakerTestNumberRepository SpeakerTestNumberRepository { get; }
 
         /// <summary>
         /// Commits all changes to database.

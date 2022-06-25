@@ -4,6 +4,6 @@ namespace Otter.Business.Definitions.Services
 {
     public interface IPremiumInquiryService
     {
-        InquiryResultDto PremiumInquiry(InquiryRequestDto dto);
+        InquiryResultDto PremiumInquiry(InquiryRequestDto dto, bool isActualUseForPolicy);
     }
 }

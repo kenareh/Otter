@@ -31,6 +31,7 @@ namespace Otter.DataAccess.SQLServer
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Configuration> Configurations { get; set; }
         public DbSet<PolicyFile> PolicyFiles { get; set; }
+        public DbSet<SpeakerTestNumber> SpeakerTestNumbers { get; set; }
 
         #region Clean String
 

@@ -16,7 +16,7 @@ namespace Otter.Business.Implementations.Services
             _unitOfWork = unitOfWork;
         }
 
-        public long Calculate(string discountCode, long basePremium)
+        public long Calculate(string discountCode, long basePremium, bool isActualUseForPolicy)
         {
             var discount = _unitOfWork.DiscountRepository.Find(p => p.Code == discountCode &&
                                                                           p.IsActive)
@@ -30,22 +30,25 @@ namespace Otter.Business.Implementations.Services
             if (discount.StartDate.HasValue && discount.StartDate.Value > DateTime.Now)
             {
                 throw new EntityNotFoundException("کد تخفیف وارد شده معتبر نمی باشد");
-
             }
 
-            if (discount.EndDate.HasValue && discount.EndDate.Value< DateTime.Now)
+            if (discount.EndDate.HasValue && discount.EndDate.Value < DateTime.Now)
             {
                 throw new EntityNotFoundException("کد تخفیف وارد شده معتبر نمی باشد");
-
             }
-
 
             if (discount.DiscountUsageType == DiscountUsageType.Limited)
             {
-                if (!discount.RemainingLimitedCount.HasValue || discount.RemainingLimitedCount == 0)
+                if (discount.RemainingLimitedCount <= 0)
                 {
                     throw new EntityNotFoundException("کد تخفیف وارد شده معتبر نمی باشد");
                 }
+            }
+
+            if (isActualUseForPolicy)
+            {
+                discount.RemainingLimitedCount--;
+                _unitOfWork.Commit();
             }
 
             long discountValue = 0;
@@ -57,7 +60,8 @@ namespace Otter.Business.Implementations.Services
                 }
                 return basePremium * discount.PercentDiscount.Value / 100;
             }
-            else if (discount.DiscountType == DiscountType.Absolute)
+
+            if (discount.DiscountType == DiscountType.Absolute)
             {
                 if (!discount.AbsoluteDiscount.HasValue)
                 {
