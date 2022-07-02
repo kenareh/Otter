@@ -8,5 +8,7 @@ namespace Otter.Business.Definitions.Services
         List<ProvinceDto> GetProvinces();
 
         List<CityDto> GetCities(long provinceId);
+
+        List<BrandDto> GetBrands();
     }
 }

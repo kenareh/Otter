@@ -16,6 +16,7 @@ namespace Otter.DataAccess.SQLServer
         private IConfigurationRepository _configurationRepository;
         private IPolicyFileRepository _policyFileRepository;
         private ISpeakerTestNumberRepository _speakerTestNumberRepository;
+        private IBrandRepository _brandRepository;
 
         public SqlUnitOfWork(ApplicationDbContext dbContext)
         {
@@ -34,6 +35,7 @@ namespace Otter.DataAccess.SQLServer
         public IConfigurationRepository ConfigurationRepository => _configurationRepository ??= new ConfigurationRepository(context);
         public IPolicyFileRepository PolicyFileRepository => _policyFileRepository ??= new PolicyFileRepository(context);
         public ISpeakerTestNumberRepository SpeakerTestNumberRepository => _speakerTestNumberRepository ??= new SpeakerTestNumberRepository(context);
+        public IBrandRepository BrandRepository => _brandRepository ??= new BrandRepository(context);
 
         /// <exception cref="DatabaseException">Condition.</exception>
         public void Commit()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Otter.Business.Definitions.Services;
+using Otter.Common.Entities;
 using Otter.Common.Enums;
 using Otter.Common.Exceptions;
 using Otter.DataAccess;

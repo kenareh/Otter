@@ -18,15 +18,22 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpGet]
+        [Route("brands")]
+        public ActionResult<List<BrandDto>> GetBrands()
+        {
+            return Ok(_baseDataService.GetBrands());
+        }
+
+        [HttpGet]
         [Route("provinces")]
-        public ActionResult<PolicyDto> GetProvinces()
+        public ActionResult<List<ProvinceDto>> GetProvinces()
         {
             return Ok(_baseDataService.GetProvinces());
         }
 
         [HttpGet]
         [Route("provinces/{provinceId}/cities")]
-        public ActionResult<PolicyDto> GetProvincesCities(long provinceId)
+        public ActionResult<List<CityDto>> GetProvincesCities(long provinceId)
         {
             return Ok(_baseDataService.GetCities(provinceId));
         }
