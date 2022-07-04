@@ -25,7 +25,7 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpGet]
         [Route("{guid}")]
-        public ActionResult<PolicyDto> PostBasicInformation(Guid guid)
+        public ActionResult<PolicyDto> GetPolicy(Guid guid)
         {
             try
             {
@@ -79,6 +79,30 @@ namespace Otter.HttpEndPoint.Controllers
             {
                 var result = _policyService.MobileConfirmByOtp(guid, otp);
                 return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BusinessViolatedException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/mobile-confirmation/reissue-otp")]
+        public async Task<ActionResult<PolicyDto>> ReissueOtpAsync(Guid guid)
+        {
+            try
+            {
+                await _policyService.ReissueOtpAsync(guid);
+                return Ok();
             }
             catch (EntityNotFoundException e)
             {
@@ -195,6 +219,26 @@ namespace Otter.HttpEndPoint.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("{guid}/speaker-test/")]
+        public ActionResult<bool> GetSpeakerTestFileName(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.GetSpeakerTestFileName(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
         [HttpPost]
         [Route("{guid}/speaker-test/{number}")]
         public ActionResult<bool> SpeakerTest(Guid guid, int number)
@@ -256,52 +300,12 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpPut]
-        [Route("{guid}/white-dot-test")]
-        public ActionResult<bool> WhiteDotTest(Guid guid)
+        [Route("{guid}/screen-test")]
+        public ActionResult<bool> ScreenTest(Guid guid)
         {
             try
             {
-                var result = _policyService.WhiteDotTest(guid);
-                return Ok(result);
-            }
-            catch (EntityNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return BadRequest("خطای غیر منتظره رخ داده است");
-            }
-        }
-
-        [HttpPut]
-        [Route("{guid}/dark-dot-test")]
-        public ActionResult<bool> DarkDotTest(Guid guid)
-        {
-            try
-            {
-                var result = _policyService.DarkDotTest(guid);
-                return Ok(result);
-            }
-            catch (EntityNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return BadRequest("خطای غیر منتظره رخ داده است");
-            }
-        }
-
-        [HttpPut]
-        [Route("{guid}/square-touch-test")]
-        public ActionResult<bool> SquareTouchTest(Guid guid)
-        {
-            try
-            {
-                var result = _policyService.SquareTouchTest(guid);
+                var result = _policyService.ScreenTest(guid);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)

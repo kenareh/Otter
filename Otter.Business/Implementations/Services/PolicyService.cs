@@ -57,7 +57,7 @@ namespace Otter.Business.Implementations.Services
             Random rnd = new Random();
             int num = rnd.Next(11111, 99999);
             policy.Otp = num.ToString();
-            policy.OtpExpiredTime = DateTime.Now.AddMinutes(5);
+            policy.OtpExpiredTime = DateTime.Now.AddMinutes(2);
 
             policy.SpeakerTestNumberId = _speakerTestNumberService.SelectRandomNumberVoiceId();
             policy.SpeakerTestAttempt = 0;
@@ -113,6 +113,38 @@ namespace Otter.Business.Implementations.Services
             _unitOfWork.Commit();
 
             return _policyFactory.CreateDto(policy);
+        }
+
+        public async Task ReissueOtpAsync(Guid guid)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("کد وارد شده معتبر نمی باشد.");
+            }
+
+            if (policy.OtpExpiredTime > DateTime.Now)
+            {
+                throw new BusinessViolatedException("فرصت وارد کردن رمز یکبار مصرف تمام نشده است");
+            }
+
+            Random rnd = new Random();
+            int num = rnd.Next(11111, 99999);
+            policy.Otp = num.ToString();
+            policy.OtpExpiredTime = DateTime.Now.AddMinutes(2);
+
+            _unitOfWork.PolicyRepository.Add(policy);
+            _unitOfWork.Commit();
+
+            var message = "کد تایید: " + policy.Otp + "\n بیمه تجارت نو";
+            try
+            {
+                await _smsService.SendAsync(message, new List<string>() { policy.Mobile });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "کد تایید ارسال نشد " + policy.Mobile + " : " + policy.Otp);
+            }
         }
 
         public PolicyDto AddImeiFile(Guid guid, string imeiFileBase64)
@@ -225,6 +257,17 @@ namespace Otter.Business.Implementations.Services
             return _policyFileFactory.CreateDto(lastBoxFile);
         }
 
+        public Guid GetSpeakerTestFileName(Guid policyGuid)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid).Include(p => p.SpeakerTestNumber).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            return policy.SpeakerTestNumber.FileName;
+        }
+
         public bool SpeakerTest(Guid policyGuid, int number)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid).Include(p => p.SpeakerTestNumber).FirstOrDefault();
@@ -303,7 +346,7 @@ namespace Otter.Business.Implementations.Services
             return _policyFileFactory.CreateDto(file);
         }
 
-        public PolicyDto WhiteDotTest(Guid guid)
+        public PolicyDto ScreenTest(Guid guid)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
             if (policy == null)
@@ -316,47 +359,7 @@ namespace Otter.Business.Implementations.Services
                 throw new EntityNotFoundException("یافت نشد.");
             }
 
-            policy.WhiteDotTestState = true;
-
-            _unitOfWork.Commit();
-
-            return _policyFactory.CreateDto(policy);
-        }
-
-        public PolicyDto DarkDotTest(Guid guid)
-        {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            policy.DarkDotTestState = true;
-
-            _unitOfWork.Commit();
-
-            return _policyFactory.CreateDto(policy);
-        }
-
-        public PolicyDto SquareTouchTest(Guid guid)
-        {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            policy.SquareTouchTestState = true;
+            policy.ScreenTestState = true;
 
             _unitOfWork.Commit();
 

@@ -12,6 +12,8 @@ namespace Otter.Business.Definitions.Services
 
         PolicyDto MobileConfirmByOtp(Guid guid, string otp);
 
+        Task ReissueOtpAsync(Guid guid);
+
         PolicyDto AddImeiFile(Guid guid, string imeiFileBase64);
 
         PolicyFileDto GetImeiFile(Guid guid);
@@ -20,16 +22,14 @@ namespace Otter.Business.Definitions.Services
 
         PolicyFileDto GetBoxImageFile(Guid guid);
 
+        Guid GetSpeakerTestFileName(Guid policyGuid);
+
         bool SpeakerTest(Guid policyGuid, int number);
 
         PolicyDto AddMicrophoneTestFile(Guid guid, string microphoneBase64Voice);
 
         PolicyFileDto GetMicrophoneTestFile(Guid guid);
 
-        PolicyDto WhiteDotTest(Guid guid);
-
-        PolicyDto DarkDotTest(Guid guid);
-
-        PolicyDto SquareTouchTest(Guid guid);
+        PolicyDto ScreenTest(Guid guid);
     }
 }

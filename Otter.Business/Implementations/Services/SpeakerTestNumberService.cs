@@ -17,8 +17,7 @@ namespace Otter.Business.Implementations.Services
 
         public long SelectRandomNumberVoiceId()
         {
-            // var randomNumber = new Random().Next(1, 100);//todo
-            var randomNumber = 58;
+            var randomNumber = new Random().Next(1, 27);
             var number = _unitOfWork.SpeakerTestNumberRepository.Find(p => p.Order == randomNumber).FirstOrDefault();
             if (number == null)
             {

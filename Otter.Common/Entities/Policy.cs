@@ -55,9 +55,7 @@ namespace Otter.Common.Entities
         public int SpeakerTestAttempt { get; set; }
         public bool SpeakerTestState { get; set; }
         public bool MicrophoneTestState { get; set; }
-        public bool WhiteDotTestState { get; set; }
-        public bool DarkDotTestState { get; set; }
-        public bool SquareTouchTestState { get; set; }
+        public bool ScreenTestState { get; set; }
 
         public long ModelId { get; set; }
         public long? CityId { get; set; }

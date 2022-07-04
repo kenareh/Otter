@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
+using Otter.Common.Exceptions;
 using Otter.Common.Tools;
 
 namespace Otter.HttpEndPoint.Controllers
@@ -21,8 +23,15 @@ namespace Otter.HttpEndPoint.Controllers
         [Route("")]
         public ActionResult<InquiryResultDto> Post(InquiryRequestDto dto)
         {
-            var result = _premiumInquiryService.PremiumInquiry(dto, false);
-            return Ok(result);
+            try
+            {
+                var result = _premiumInquiryService.PremiumInquiry(dto, false);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }
