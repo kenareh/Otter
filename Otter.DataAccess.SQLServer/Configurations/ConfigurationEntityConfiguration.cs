@@ -10,7 +10,12 @@ namespace Otter.DataAccess.SQLServer.Configurations
         {
             builder.HasData(
 
-                new Configuration() { Id = 1, Key = "PremiumRate", Value = "0.3" }
+                new Configuration() { Id = 1, Key = "PremiumRate", Value = "0.3" },
+                new Configuration() { Id = 2, Key = "IPGTerminalId", Value = "08069161" },
+                new Configuration() { Id = 3, Key = "IPGAcceptorId", Value = "992180008069161" },
+                new Configuration() { Id = 4, Key = "IPGPassPhrase", Value = "76FEB0F316883B83" },
+                new Configuration() { Id = 5, Key = "IPGAccountNumber", Value = "0000113939400" },
+                new Configuration() { Id = 6, Key = "IPGRsaPublicKey", Value = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDfA/K5iF5s7GqNpBm+mRdZQvmAmSMpO+65h4jrIEEbS+HoMGWVZsBz+Kmh7PUZX48bqSqIUcIOlF0glxLENGwCaQU2lMrw1CNODqhEKbP4j2VjZisGgUSGv8fmBEpqBjwT1us6r+z0JwlCXeJ46BLAIyzg003PX0iRNjhnzSOx7QIDAQAB" }
 
             );
         }
