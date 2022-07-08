@@ -37,7 +37,6 @@ namespace Otter.Common.Entities
         [MaxLength(50)]
         public string BirthDateString { get; set; }
 
-        [MaxLength(50)]
         public DateTime BirthDate { get; set; }
 
         [MaxLength(500)]

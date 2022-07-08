@@ -11,6 +11,12 @@ namespace Otter.Common.Enums
         PhoneBox = 2,
 
         [Description("تست میکروفون")]
-        MicrophoneVoice = 3
+        MicrophoneVoice = 3,
+
+        [Description("تصویر دوربین جلو")]
+        FrontCamera = 4,
+
+        [Description("تصویر دوربین پشت")]
+        BackCamera = 5,
     }
 }

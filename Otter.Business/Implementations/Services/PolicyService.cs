@@ -365,5 +365,77 @@ namespace Otter.Business.Implementations.Services
 
             return _policyFactory.CreateDto(policy);
         }
+
+        public PolicyDto AddCameraFiles(Guid guid, string frontCameraBase64Image, string backCameraBase64Image)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (!policy.IsMobileConfirmed)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            var front = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.FrontCamera)
+                .FirstOrDefault();
+            if (front != null)
+            {
+                _unitOfWork.PolicyFileRepository.Remove(front);
+                _unitOfWork.Commit();
+            }
+            var newFrontFile = new PolicyFile()
+            {
+                PolicyFileType = PolicyFileType.FrontCamera,
+                PolicyId = policy.Id,
+                Base64 = frontCameraBase64Image
+            };
+            _unitOfWork.PolicyFileRepository.Add(newFrontFile);
+
+            var back = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.BackCamera)
+                .FirstOrDefault();
+            if (back != null)
+            {
+                _unitOfWork.PolicyFileRepository.Remove(front);
+                _unitOfWork.Commit();
+            }
+            var newBackFile = new PolicyFile()
+            {
+                PolicyFileType = PolicyFileType.FrontCamera,
+                PolicyId = policy.Id,
+                Base64 = backCameraBase64Image
+            };
+            _unitOfWork.PolicyFileRepository.Add(newBackFile);
+
+            _unitOfWork.Commit();
+
+            return _policyFactory.CreateDto(policy);
+        }
+
+        public List<PolicyFileDto> GetCameraFiles(Guid guid)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (!policy.IsMobileConfirmed)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+            var files = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id &&
+                                                                          (p.PolicyFileType == PolicyFileType.FrontCamera || p.PolicyFileType == PolicyFileType.BackCamera))
+                .ToList();
+
+            return _policyFileFactory.CreateDto(files).ToList();
+        }
+
+        public PolicyDto InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

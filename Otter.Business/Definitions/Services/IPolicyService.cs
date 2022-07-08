@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Otter.Business.Dtos;
 
@@ -31,5 +32,11 @@ namespace Otter.Business.Definitions.Services
         PolicyFileDto GetMicrophoneTestFile(Guid guid);
 
         PolicyDto ScreenTest(Guid guid);
+
+        PolicyDto AddCameraFiles(Guid guid, string frontCameraBase64Image, string backCameraBase64Image);
+
+        List<PolicyFileDto> GetCameraFiles(Guid guid);
+
+        PolicyDto InsertPersonalInformation(Guid guid, PersonalInfoDto dto);
     }
 }

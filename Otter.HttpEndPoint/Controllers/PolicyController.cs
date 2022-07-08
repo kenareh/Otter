@@ -180,6 +180,46 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpPut]
+        [Route("{guid}/files/camera")]
+        public ActionResult<PolicyDto> AddCameraFiles(Guid guid, FileCameraInsertDto dto)
+        {
+            try
+            {
+                var result = _policyService.AddCameraFiles(guid, dto.FrontCameraBase64Image, dto.BackCameraBase64Image);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
+        [Route("{guid}/files/camera")]
+        public ActionResult<PolicyDto> GetCameraFiles(Guid guid)
+        {
+            try
+            {
+                var result = _policyService.GetCameraFiles(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
         [Route("{guid}/files/box-image")]
         public ActionResult<PolicyDto> AddBoxImageFile(Guid guid, FilePolicyInsertDto dto)
         {
@@ -221,7 +261,7 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpGet]
         [Route("{guid}/speaker-test/")]
-        public ActionResult<bool> GetSpeakerTestFileName(Guid guid)
+        public ActionResult<Guid> GetSpeakerTestFileName(Guid guid)
         {
             try
             {
@@ -306,6 +346,26 @@ namespace Otter.HttpEndPoint.Controllers
             try
             {
                 var result = _policyService.ScreenTest(guid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPut]
+        [Route("{guid}/personal-information")]
+        public ActionResult<bool> InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
+        {
+            try
+            {
+                var result = _policyService.InsertPersonalInformation(guid, dto);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)
