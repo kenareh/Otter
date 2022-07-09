@@ -361,7 +361,7 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpPut]
         [Route("{guid}/personal-information")]
-        public ActionResult<bool> InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
+        public ActionResult<PolicyDto> InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
         {
             try
             {

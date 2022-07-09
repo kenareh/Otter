@@ -35,5 +35,10 @@ namespace Otter.Business.Dtos
         public BaseEnumDto PolicyState { get; set; }
         public long ModelId { get; set; }
         public long CityId { get; set; }
+
+        public CityDto City { get; set; }
+        public ModelDto Model { get; set; }
+        public ProvinceDto Province { get; set; }
+        public BrandDto Brand { get; set; }
     }
 }

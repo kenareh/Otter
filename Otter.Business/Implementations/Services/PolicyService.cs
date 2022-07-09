@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -81,7 +82,19 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto Get(Guid guid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            var policy = GetValidPolicy(guid);
+
+            return _policyFactory.CreateDto(policy);
+        }
+
+        private Policy GetValidPolicy(Guid guid)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid)
+                .Include(p => p.City)
+                .Include(p => p.City.Province)
+                .Include(p => p.Model)
+                .Include(p => p.Model.Brand)
+                .FirstOrDefault();
             if (policy == null)
             {
                 throw new EntityNotFoundException("یافت نشد.");
@@ -92,7 +105,7 @@ namespace Otter.Business.Implementations.Services
                 throw new EntityNotFoundException("یافت نشد.");
             }
 
-            return _policyFactory.CreateDto(policy);
+            return policy;
         }
 
         public PolicyDto MobileConfirmByOtp(Guid guid, string otp)
@@ -149,16 +162,7 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto AddImeiFile(Guid guid, string imeiFileBase64)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
             var lastImeiFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.Imei)
                 .FirstOrDefault();
@@ -182,16 +186,8 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyFileDto GetImeiFile(Guid guid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
             var lastImeiFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.Imei)
                 .FirstOrDefault();
             if (lastImeiFile == null)
@@ -204,16 +200,7 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto AddBoxImageFile(Guid guid, string imeiFileBase64)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
             var lastBoxFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.PhoneBox)
                 .FirstOrDefault();
@@ -237,16 +224,8 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyFileDto GetBoxImageFile(Guid guid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
             var lastBoxFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.PhoneBox)
                 .FirstOrDefault();
             if (lastBoxFile == null)
@@ -259,22 +238,14 @@ namespace Otter.Business.Implementations.Services
 
         public Guid GetSpeakerTestFileName(Guid policyGuid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid).Include(p => p.SpeakerTestNumber).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(policyGuid);
 
             return policy.SpeakerTestNumber.FileName;
         }
 
         public bool SpeakerTest(Guid policyGuid, int number)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid).Include(p => p.SpeakerTestNumber).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(policyGuid);
 
             policy.SpeakerTestAttempt++;
             if (policy.SpeakerTestNumber.Number == number)
@@ -292,16 +263,7 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto AddMicrophoneTestFile(Guid guid, string microphoneBase64Voice)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
             var microphoneVoiceFile = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.MicrophoneVoice)
                 .FirstOrDefault();
@@ -326,16 +288,8 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyFileDto GetMicrophoneTestFile(Guid guid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
             var file = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.MicrophoneVoice)
                 .FirstOrDefault();
             if (file == null)
@@ -348,16 +302,7 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto ScreenTest(Guid guid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
             policy.ScreenTestState = true;
 
@@ -368,16 +313,7 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto AddCameraFiles(Guid guid, string frontCameraBase64Image, string backCameraBase64Image)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
             var front = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id && p.PolicyFileType == PolicyFileType.FrontCamera)
                 .FirstOrDefault();
@@ -416,16 +352,8 @@ namespace Otter.Business.Implementations.Services
 
         public List<PolicyFileDto> GetCameraFiles(Guid guid)
         {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid).FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
+            var policy = GetValidPolicy(guid);
 
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
             var files = _unitOfWork.PolicyFileRepository.Find(p => p.PolicyId == policy.Id &&
                                                                           (p.PolicyFileType == PolicyFileType.FrontCamera || p.PolicyFileType == PolicyFileType.BackCamera))
                 .ToList();
@@ -435,7 +363,19 @@ namespace Otter.Business.Implementations.Services
 
         public PolicyDto InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
         {
-            throw new NotImplementedException();
+            var policy = GetValidPolicy(guid);
+
+            policy.Firstname = dto.Firstname;
+            policy.Lastname = dto.Lastname;
+            policy.NationalCode = dto.NationalCode;
+            policy.BirthDate = dto.BirthDate;
+            policy.BirthDateString = dto.BirthDate.ToString(CultureInfo.InvariantCulture);
+            policy.Address = dto.Address;
+            policy.CityId = dto.CityId;
+
+            _unitOfWork.Commit();
+
+            return _policyFactory.CreateDto(policy);
         }
     }
 }
