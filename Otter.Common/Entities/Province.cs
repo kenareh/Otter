@@ -11,6 +11,11 @@ namespace Otter.Common.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
+        [MaxLength(100)]
+        public string EnName { get; set; }
+
+        public int Index { get; set; }
+
         public virtual List<City> Cities { get; set; }
     }
 }

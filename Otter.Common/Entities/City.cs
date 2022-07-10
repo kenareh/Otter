@@ -10,6 +10,10 @@ namespace Otter.Common.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
+        [MaxLength(100)]
+        public string EnName { get; set; }
+
+        public int Index { get; set; }
         public long ProvinceId { get; set; }
         public virtual Province Province { get; set; }
     }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
+using Otter.Business.Dtos.Payment;
 using Otter.Common.Exceptions;
 using Otter.Common.Tools;
 
@@ -23,14 +24,54 @@ namespace Otter.HttpEndPoint.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Route("")]
-        public async Task<ActionResult<object>> Get(string requestId, string paymentId)
+        [HttpPost]
+        [Route("requests")]
+        public async Task<ActionResult<PaymentRequestResultDto>> InsertPaymentRequestAsync(Guid policyGuid)
         {
-            requestId = new Random().Next(50000, 9000000).ToString();
-            paymentId = new Random().Next(50000, 9000000).ToString();
-            await _paymentService.GetTokenAsync(100000, requestId, paymentId, "https://tejaratnoins.ir");
-            return Ok();
+            try
+            {
+                var result = await _paymentService.InsertPaymentRequestAsync(policyGuid);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BusinessViolatedException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
+        [Route("callback")]
+        public async Task<ActionResult<object>> CallBackAsync(string token, string responseCode,
+            string acceptorId, string amount, string paymentId,
+            string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan)
+        {
+            try
+            {
+                var result = await _paymentService.VerifyAsync(token, responseCode, acceptorId, amount, paymentId, requestId, retrievalReferenceNumber, systemTraceAuditNumber, maskedPan);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BusinessViolatedException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
         }
     }
 }

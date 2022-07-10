@@ -2,6 +2,7 @@
 using System.Linq;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
+using Otter.Business.Dtos.Payment;
 using Otter.Common.Exceptions;
 using Otter.DataAccess;
 

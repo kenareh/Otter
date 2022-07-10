@@ -65,5 +65,6 @@ namespace Otter.Common.Entities
         public virtual SpeakerTestNumber SpeakerTestNumber { get; set; }
 
         public List<PolicyFile> PolicyFiles { get; set; }
+        public List<Payment> Payments { get; set; }
     }
 }

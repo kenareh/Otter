@@ -1,4 +1,4 @@
-﻿namespace Otter.Business.Dtos
+﻿namespace Otter.Business.Dtos.Payment
 {
     public class PaymentConfigurationDto
     {

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Otter.DataAccess.SQLServer;
 
 namespace Otter.DataAccess.SQLServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220709055053_AddIndexAndEnName")]
+    partial class AddIndexAndEnName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,39 +263,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.ToTable("Models", "Base");
                 });
 
-            modelBuilder.Entity("Otter.Common.Entities.Payment", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("PaymentId")
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
-                    b.Property<long>("PolicyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PremiumAmount")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("RequestId")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Token")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PolicyId");
-
-                    b.ToTable("Payments");
-                });
-
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
                 {
                     b.Property<long>("Id")
@@ -490,17 +459,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("Otter.Common.Entities.Payment", b =>
-                {
-                    b.HasOne("Otter.Common.Entities.Policy", "Policy")
-                        .WithMany("Payments")
-                        .HasForeignKey("PolicyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Policy");
-                });
-
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
                 {
                     b.HasOne("Otter.Common.Entities.City", "City")
@@ -544,8 +502,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
 
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
                 {
-                    b.Navigation("Payments");
-
                     b.Navigation("PolicyFiles");
                 });
 
