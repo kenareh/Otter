@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Otter.Business.Definitions.Factories;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
 using Otter.Business.Dtos.Payment;
@@ -24,13 +25,15 @@ namespace Otter.Business.Implementations.Services
         private IConfigurationService _configurationService;
         private IConfiguration _configuration;
         private ILogger<PaymentService> _logger;
+        private IPaymentFactory _paymentFactory;
 
-        public PaymentService(IConfigurationService configurationService, IUnitOfWork unitOfWork, IConfiguration configuration, ILogger<PaymentService> logger)
+        public PaymentService(IConfigurationService configurationService, IUnitOfWork unitOfWork, IConfiguration configuration, ILogger<PaymentService> logger, IPaymentFactory paymentFactory)
         {
             _configurationService = configurationService;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _logger = logger;
+            _paymentFactory = paymentFactory;
         }
 
         public async Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid)
@@ -50,7 +53,8 @@ namespace Otter.Business.Implementations.Services
                 PremiumAmount = policy.FinalPremium,
                 RequestId = requestId,
                 Token = token,
-                InsertDate = DateTime.Now
+                InsertDate = DateTime.Now,
+                Guid = Guid.NewGuid()
             };
             _unitOfWork.PaymentRepository.Add(payment);
             _unitOfWork.Commit();
@@ -122,7 +126,7 @@ namespace Otter.Business.Implementations.Services
             }
         }
 
-        public async Task<VerifyResultDto> VerifyAsync(string token, string responseCode, string acceptorId, string amount, string paymentId,
+        public async Task<string> VerifyAsync(string token, string responseCode, string acceptorId, string amount, string paymentId,
             string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan)
         {
             var payment = _unitOfWork.PaymentRepository.Find(p => p.Token == token && p.RequestId == requestId).FirstOrDefault();
@@ -135,17 +139,25 @@ namespace Otter.Business.Implementations.Services
 
             payment.VerifyDate = DateTime.Now;
             payment.PayerCard = maskedPan;
+            payment.RetrievalReferenceNumber = retrievalReferenceNumber;
+            payment.SystemTraceAuditNumber = systemTraceAuditNumber;
             payment.IsSuccessful = true;
 
             _unitOfWork.Commit();
+            var uiRedirectUrl = _configuration.GetValue<string>("UIPaymentRedirectUrl") + payment.Guid;
 
-            return new VerifyResultDto()
+            return uiRedirectUrl;
+        }
+
+        public PaymentDto Get(Guid guid)
+        {
+            var payment = _unitOfWork.PaymentRepository.Find(p => p.Guid == guid).FirstOrDefault();
+            if (payment == null)
             {
-                DateTime = DateTime.Now,
-                PayerCard = maskedPan,
-                RetrievalReferenceNumber = retrievalReferenceNumber,
-                SystemTraceAuditNumber = systemTraceAuditNumber
-            };
+                throw new EntityNotFoundException("پرداخت مورد نظر یافت نشد");
+            }
+
+            return _paymentFactory.CreateDto(payment);
         }
 
         private async Task<IranKishVerifyResultDataDto> IranKishVerifyAsync(string token, string retrievalReferenceNumber, string systemTraceAuditNumber)

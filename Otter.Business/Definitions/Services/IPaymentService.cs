@@ -9,6 +9,8 @@ namespace Otter.Business.Definitions.Services
     {
         Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid);
 
-        Task<VerifyResultDto> VerifyAsync(string token, string responseCode, string acceptorId, string amount, string paymentId, string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan);
+        Task<string> VerifyAsync(string token, string responseCode, string acceptorId, string amount, string paymentId, string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan);
+
+        PaymentDto Get(Guid guid);
     }
 }

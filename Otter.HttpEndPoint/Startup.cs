@@ -111,6 +111,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IModelFactory, ModelFactory>();
                 services.AddScoped<IBaseDataService, BaseDataService>();
                 services.AddScoped<IPaymentService, PaymentService>();
+                services.AddScoped<IPaymentFactory, PaymentFactory>();
             }
             else
             {

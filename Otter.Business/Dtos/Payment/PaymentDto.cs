@@ -1,21 +1,16 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Otter.Common.Entities.BaseEntities;
+using Otter.Common.Entities;
 
-namespace Otter.Common.Entities
+namespace Otter.Business.Dtos.Payment
 {
-    public class Payment : BaseEntity<long>
+    public class PaymentDto
     {
         public long PremiumAmount { get; set; }
 
-        [Required]
-        [MaxLength(30)]
         public string RequestId { get; set; }
 
-        [MaxLength(11)]
         public string PaymentId { get; set; }
 
-        [MaxLength(50)]
         public string Token { get; set; }
 
         public long PolicyId { get; set; }
@@ -23,18 +18,10 @@ namespace Otter.Common.Entities
         public DateTime InsertDate { get; set; }
 
         public DateTime? VerifyDate { get; set; }
-
-        [MaxLength(100)]
         public string PayerCard { get; set; }
-
-        [MaxLength(100)]
         public string RetrievalReferenceNumber { get; set; }
-
-        [MaxLength(100)]
         public string SystemTraceAuditNumber { get; set; }
-
         public bool? IsSuccessful { get; set; }
-
         public Guid Guid { get; set; }
     }
 }
