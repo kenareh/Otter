@@ -36,5 +36,8 @@ namespace Otter.Common.Entities
         public bool? IsSuccessful { get; set; }
 
         public Guid Guid { get; set; }
+
+        [MaxLength(300)]
+        public string ErrorMessage { get; set; }
     }
 }

@@ -1,0 +1,48 @@
+﻿@model Otter.Business.Dtos.Payment.PaymentRequestResultDto
+
+@{
+    ViewData["Title"] = "PaymentRedirect";
+}
+
+@{
+    ViewData["Title"] = "هدایت به صفحه پرداخت";
+}
+
+<div class="text-center">
+    
+    <h1>در حال هدایت به صفحه پرداخت تا <span id="timer-span">5</span> ثانیه دیگر</h1>
+    <h6>در صورتی که به صورت خودکار وارد صفحه پرداخت نشدید روی دکمه پرداخت کلیک فرمایید</h6>
+
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <form id="payment-form" class="hidden"  action="@Model.PaymentUrl" method="post">
+                <input name="tokenIdentity" value="@Model.Token"  type="hidden" />
+                @* <input name="merchantId" value="@Model.MerchantId"  type="hidden" /> *@
+                @* <input name="PaymentId" value="@Model.PaymentId"  type="hidden" /> *@
+                <button class="btn btn-success btn-block"  type="submit" >پرداخت</button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+
+        $( document ).ready(function() {
+            var timer = 5;
+            setInterval(function() {
+                    timer--;
+                    document.getElementById("timer-span").innerHTML=timer;
+                    if (timer===0) {
+                        document.getElementById("payment-form").submit();
+                    }
+                },
+                1000);
+        });
+
+    </script>
+}

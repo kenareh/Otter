@@ -11,7 +11,7 @@ using Otter.Common.Tools;
 
 namespace Otter.HttpEndPoint.Controllers
 {
-    [Route("api/payment")]
+    [Route("api/payments")]
     [ApiController]
     public class PaymentController : ControllerBase
     {
@@ -24,40 +24,14 @@ namespace Otter.HttpEndPoint.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("requests/policy-id/{policyGuid}")]
         public async Task<ActionResult<PaymentRequestResultDto>> InsertPaymentRequestAsync(Guid policyGuid)
         {
             try
             {
                 var result = await _paymentService.InsertPaymentRequestAsync(policyGuid);
-                return Ok(result);
-            }
-            catch (EntityNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (BusinessViolatedException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return BadRequest("خطای غیر منتظره رخ داده است");
-            }
-        }
-
-        [HttpGet]
-        [Route("callback")]
-        public async Task<ActionResult<VerifyResultDto>> CallBackAsync(string token, string responseCode,
-            string acceptorId, string amount, string paymentId,
-            string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan)
-        {
-            try
-            {
-                var result = await _paymentService.VerifyAsync(token, responseCode, acceptorId, amount, paymentId, requestId, retrievalReferenceNumber, systemTraceAuditNumber, maskedPan);
-                return Ok(result);
+                return RedirectToAction("PaymentRedirect", "Home", result);
             }
             catch (EntityNotFoundException e)
             {

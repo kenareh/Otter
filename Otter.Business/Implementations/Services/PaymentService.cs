@@ -39,7 +39,11 @@ namespace Otter.Business.Implementations.Services
         public async Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid)
         {
             var policy = GetValidPolicy(policyGuid);
-
+            var isTherePaidPayment = _unitOfWork.PaymentRepository.Find(p => p.PolicyId == policy.Id && p.IsSuccessful == true).Any();
+            if (isTherePaidPayment)
+            {
+                throw new BusinessViolatedException("این بیمه نامه قبلا پرداخت شده است");
+            }
             var requestId = (_unitOfWork.PaymentRepository.Find().Count() + 10000).ToString();
 
             var redirectUrl = _configuration.GetValue<string>("PaymentRedirectUrl");
@@ -59,9 +63,15 @@ namespace Otter.Business.Implementations.Services
             _unitOfWork.PaymentRepository.Add(payment);
             _unitOfWork.Commit();
 
+            var paymentUrl = _configuration.GetValue<string>("IranKish:Payment");
+            var conf = _configurationService.GetPaymentConfiguration();
+
             return new PaymentRequestResultDto()
             {
-                Token = token
+                Token = token,
+                PaymentUrl = paymentUrl,
+                PaymentId = payment.PaymentId,
+                MerchantId = conf.AcceptorId
             };
         }
 
@@ -107,10 +117,11 @@ namespace Otter.Business.Implementations.Services
 
             var json = JsonConvert.SerializeObject(requestClass);
 
+            var tokenUrl = _configuration.GetValue<string>("IranKish:Token");
             var http = new HttpClient()
             {
-                BaseAddress = new Uri("https://ikc.shaparak.ir/api/v3/tokenization/make")
-            }; ;
+                BaseAddress = new Uri(tokenUrl)
+            };
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await http.PostAsync("", content);
@@ -135,18 +146,32 @@ namespace Otter.Business.Implementations.Services
                 throw new EntityNotFoundException("پرداخت مورد نظر یافت نشد");
             }
 
-            var result = await IranKishVerifyAsync(token, retrievalReferenceNumber, systemTraceAuditNumber);
-
-            payment.VerifyDate = DateTime.Now;
-            payment.PayerCard = maskedPan;
-            payment.RetrievalReferenceNumber = retrievalReferenceNumber;
-            payment.SystemTraceAuditNumber = systemTraceAuditNumber;
-            payment.IsSuccessful = true;
-
-            _unitOfWork.Commit();
             var uiRedirectUrl = _configuration.GetValue<string>("UIPaymentRedirectUrl") + payment.Guid;
 
-            return uiRedirectUrl;
+            try
+            {
+                var result = await IranKishVerifyAsync(token, retrievalReferenceNumber, systemTraceAuditNumber);
+
+                payment.VerifyDate = DateTime.Now;
+                payment.PayerCard = maskedPan;
+                payment.RetrievalReferenceNumber = retrievalReferenceNumber;
+                payment.SystemTraceAuditNumber = systemTraceAuditNumber;
+                payment.IsSuccessful = true;
+
+                _unitOfWork.Commit();
+
+                return uiRedirectUrl;
+            }
+            catch (BusinessViolatedException e)
+            {
+                payment.VerifyDate = DateTime.Now;
+                payment.RetrievalReferenceNumber = retrievalReferenceNumber;
+                payment.SystemTraceAuditNumber = systemTraceAuditNumber;
+                payment.IsSuccessful = false;
+                payment.ErrorMessage = e.Message;
+                _unitOfWork.Commit();
+                return uiRedirectUrl;
+            }
         }
 
         public PaymentDto Get(Guid guid)
@@ -171,10 +196,10 @@ namespace Otter.Business.Implementations.Services
                 RetrievalReferenceNumber = retrievalReferenceNumber,
                 TokenIdentity = token
             };
-
+            var verifyUrl = _configuration.GetValue<string>("IranKish:Verify");
             var http = new HttpClient()
             {
-                BaseAddress = new Uri("https://ikc.shaparak.ir/api/v3/confirmation/purchase")
+                BaseAddress = new Uri(verifyUrl)
             };
 
             var json = JsonConvert.SerializeObject(requestVerify);
@@ -189,7 +214,7 @@ namespace Otter.Business.Implementations.Services
             }
             else
             {
-                throw new BusinessViolatedException(GetError(result.responseCode));
+                throw new BusinessViolatedException(result.description + " - " + GetError(result.responseCode));
             }
         }
 

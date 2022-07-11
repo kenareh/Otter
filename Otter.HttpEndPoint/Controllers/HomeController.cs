@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Otter.Business.Dtos.Payment;
 using Otter.HttpEndPoint.Models;
 
 namespace Otter.HttpEndPoint.Controllers
@@ -17,6 +18,11 @@ namespace Otter.HttpEndPoint.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult PaymentRedirect(PaymentRequestResultDto model)
+        {
+            return View(model);
         }
 
         public IActionResult Privacy()

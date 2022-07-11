@@ -23,5 +23,6 @@ namespace Otter.Business.Dtos.Payment
         public string SystemTraceAuditNumber { get; set; }
         public bool? IsSuccessful { get; set; }
         public Guid Guid { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }
