@@ -13,6 +13,7 @@ using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
 using Otter.Business.Dtos.Payment;
 using Otter.Common.Entities;
+using Otter.Common.Enums;
 using Otter.Common.Exceptions;
 using Otter.Common.Tools;
 using Otter.DataAccess;
@@ -38,12 +39,25 @@ namespace Otter.Business.Implementations.Services
 
         public async Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid)
         {
-            var policy = GetValidPolicy(policyGuid);
-            var isTherePaidPayment = _unitOfWork.PaymentRepository.Find(p => p.PolicyId == policy.Id && p.IsSuccessful == true).Any();
-            if (isTherePaidPayment)
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid)
+                .FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (!policy.IsMobileConfirmed)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (policy.PolicyState >= PolicyState.Paid)
             {
                 throw new BusinessViolatedException("این بیمه نامه قبلا پرداخت شده است");
             }
+
+            policy.PolicyState = PolicyState.WaitForPayment;
+
             var requestId = (_unitOfWork.PaymentRepository.Find().Count() + 10000).ToString();
 
             var redirectUrl = _configuration.GetValue<string>("PaymentRedirectUrl");
@@ -73,23 +87,6 @@ namespace Otter.Business.Implementations.Services
                 PaymentId = payment.PaymentId,
                 MerchantId = conf.AcceptorId
             };
-        }
-
-        private Policy GetValidPolicy(Guid guid)
-        {
-            var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid)
-                .FirstOrDefault();
-            if (policy == null)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            if (!policy.IsMobileConfirmed)
-            {
-                throw new EntityNotFoundException("یافت نشد.");
-            }
-
-            return policy;
         }
 
         private async Task<string> GetTokenAsync(long amount, string requestId, string paymentId, string revertUrl)
@@ -158,6 +155,8 @@ namespace Otter.Business.Implementations.Services
                 payment.SystemTraceAuditNumber = systemTraceAuditNumber;
                 payment.IsSuccessful = true;
 
+                var policy = _unitOfWork.PolicyRepository.Find(p => p.Id == payment.PolicyId).FirstOrDefault();
+                policy.PolicyState = PolicyState.Paid;
                 _unitOfWork.Commit();
 
                 return uiRedirectUrl;

@@ -5,9 +5,15 @@ namespace Otter.Common.Enums
     public enum PolicyState
     {
         [Description("ثبت اولیه")]
-        BasicRegistered,
+        BasicRegistered = 0,
 
         [Description("موبایل تایید شده")]
-        MobileConfirmed
+        MobileConfirmed = 1,
+
+        [Description("در انتظار پرداخت")]
+        WaitForPayment = 2,
+
+        [Description("پرداخت شده")]
+        Paid = 3,
     }
 }
