@@ -15,6 +15,8 @@ namespace Otter.Business.Definitions.Services
 
         Task ReissueOtpAsync(Guid guid);
 
+        PolicyDto AddImei(Guid guid, string imei);
+
         PolicyDto AddImeiFile(Guid guid, string imeiFileBase64);
 
         PolicyFileDto GetImeiFile(Guid guid);

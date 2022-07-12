@@ -160,6 +160,16 @@ namespace Otter.Business.Implementations.Services
             }
         }
 
+        public PolicyDto AddImei(Guid guid, string imei)
+        {
+            var policy = GetValidPolicy(guid);
+
+            policy.Imei = imei;
+            _unitOfWork.Commit();
+
+            return _policyFactory.CreateDto(policy);
+        }
+
         public PolicyDto AddImeiFile(Guid guid, string imeiFileBase64)
         {
             var policy = GetValidPolicy(guid);

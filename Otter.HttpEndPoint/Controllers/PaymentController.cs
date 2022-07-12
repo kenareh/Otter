@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Services;
@@ -31,7 +32,10 @@ namespace Otter.HttpEndPoint.Controllers
             try
             {
                 var result = await _paymentService.InsertPaymentRequestAsync(policyGuid);
-                return RedirectToAction("PaymentRedirect", "Home", result);
+       
+                var url =  Url.ActionLink("PaymentRedirect", "Home", result);
+                    
+                return Ok(url);
             }
             catch (EntityNotFoundException e)
             {

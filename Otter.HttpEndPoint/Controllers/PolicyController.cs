@@ -125,7 +125,7 @@ namespace Otter.HttpEndPoint.Controllers
         {
             try
             {
-                var result = _policyService.AddImeiFile(guid, imei);
+                var result = _policyService.AddImei(guid, imei);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)

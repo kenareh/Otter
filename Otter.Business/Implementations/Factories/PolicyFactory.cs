@@ -42,6 +42,7 @@ namespace Otter.Business.Implementations.Factories
             var dto = base.CreateDto(entity);
 
             dto.PolicyState = entity.PolicyState.ToBaseEnumDto();
+
             if (entity.City != null)
             {
                 dto.City = _cityFactory.CreateDto(entity.City);
