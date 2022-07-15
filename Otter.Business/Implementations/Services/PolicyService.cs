@@ -90,10 +90,9 @@ namespace Otter.Business.Implementations.Services
         private Policy GetValidPolicy(Guid guid)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid)
-                .Include(p => p.City)
-                .Include(p => p.City.Province)
-                .Include(p => p.Model)
-                .Include(p => p.Model.Brand)
+                .Include(p => p.City).ThenInclude(p => p.Province)
+                .Include(p => p.Model).ThenInclude(p => p.Brand)
+                .Include(p=>p.SpeakerTestNumber)
                 .FirstOrDefault();
             if (policy == null)
             {
