@@ -39,6 +39,22 @@ namespace Otter.Business.Implementations.Services
             _premiumInquiryService = premiumInquiryService;
         }
 
+        public PolicyFullDto GetFull(long id)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Id == id)
+                .Include(p => p.City).ThenInclude(p => p.Province)
+                .Include(p => p.Model).ThenInclude(p => p.Brand)
+                .Include(p => p.SpeakerTestNumber)
+                .Include(p => p.PolicyFiles)
+                .FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            return _policyFactory.CreateFullDto(policy);
+        }
+
         public async Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto)
         {
             var policy = _policyFactory.CreateEntityFromBasicInformation(dto);
@@ -92,7 +108,7 @@ namespace Otter.Business.Implementations.Services
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid)
                 .Include(p => p.City).ThenInclude(p => p.Province)
                 .Include(p => p.Model).ThenInclude(p => p.Brand)
-                .Include(p=>p.SpeakerTestNumber)
+                .Include(p => p.SpeakerTestNumber)
                 .FirstOrDefault();
             if (policy == null)
             {
