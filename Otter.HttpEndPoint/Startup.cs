@@ -113,6 +113,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IPaymentService, PaymentService>();
                 services.AddScoped<IPaymentFactory, PaymentFactory>();
                 services.AddScoped<ISpeakerTestNumberFactory, SpeakerTestNumberFactory>();
+                services.AddScoped<IDiscountFactory, DiscountFactory>();
             }
             else
             {

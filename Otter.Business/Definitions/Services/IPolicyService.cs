@@ -9,6 +9,8 @@ namespace Otter.Business.Definitions.Services
     {
         PolicyFullDto GetFull(long id);
 
+        List<PolicyDto> Get();
+
         Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto);
 
         PolicyDto Get(Guid guid);

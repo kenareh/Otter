@@ -55,6 +55,12 @@ namespace Otter.Business.Implementations.Services
             return _policyFactory.CreateFullDto(policy);
         }
 
+        public List<PolicyDto> Get()
+        {
+            var policies = _unitOfWork.PolicyRepository.Find().ToList();
+            return _policyFactory.CreateDto(policies).ToList();
+        }
+
         public async Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto)
         {
             var policy = _policyFactory.CreateEntityFromBasicInformation(dto);
