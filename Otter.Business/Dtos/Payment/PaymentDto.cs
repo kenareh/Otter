@@ -14,7 +14,7 @@ namespace Otter.Business.Dtos.Payment
         public string Token { get; set; }
 
         public long PolicyId { get; set; }
-        public Policy Policy { get; set; }
+        public PolicyDto Policy { get; set; }
         public DateTime InsertDate { get; set; }
 
         public DateTime? VerifyDate { get; set; }

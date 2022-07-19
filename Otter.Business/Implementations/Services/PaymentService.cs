@@ -37,6 +37,24 @@ namespace Otter.Business.Implementations.Services
             _paymentFactory = paymentFactory;
         }
 
+        public PaymentDto Get(long id)
+        {
+            var payment = _unitOfWork.PaymentRepository.Find(p => p.Id == id).Include(p => p.Policy).FirstOrDefault();
+            if (payment == null)
+            {
+                throw new EntityNotFoundException("پرداخت مورد نظر یافت نشد");
+            }
+
+            return _paymentFactory.CreateDto(payment);
+        }
+
+        public List<PaymentDto> Get()
+        {
+            var payments = _unitOfWork.PaymentRepository.Find().ToList();
+
+            return _paymentFactory.CreateDto(payments).ToList();
+        }
+
         public async Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid)
