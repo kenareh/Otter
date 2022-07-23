@@ -11,6 +11,7 @@ using Otter.Business.Dtos;
 using Otter.Common.Entities;
 using Otter.Common.Enums;
 using Otter.Common.Exceptions;
+using Otter.Common.Tools;
 using Otter.DataAccess;
 using Otter.ExternalService.Sms;
 using Otter.ExternalService.Utilities;
@@ -26,9 +27,10 @@ namespace Otter.Business.Implementations.Services
         private IPolicyFileFactory _policyFileFactory;
         private ISpeakerTestNumberService _speakerTestNumberService;
         private IPremiumInquiryService _premiumInquiryService;
+        private IAgentService _agentService;
 
         public PolicyService(IUnitOfWork unitOfWork, IPolicyFactory policyFactory, ISmsService smsService,
-            ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService, IPremiumInquiryService premiumInquiryService)
+            ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService, IPremiumInquiryService premiumInquiryService, IAgentService agentService)
         {
             _unitOfWork = unitOfWork;
             _policyFactory = policyFactory;
@@ -37,6 +39,7 @@ namespace Otter.Business.Implementations.Services
             _policyFileFactory = policyFileFactory;
             _speakerTestNumberService = speakerTestNumberService;
             _premiumInquiryService = premiumInquiryService;
+            _agentService = agentService;
         }
 
         public PolicyFullDto GetFull(long id)
@@ -46,6 +49,7 @@ namespace Otter.Business.Implementations.Services
                 .Include(p => p.Model).ThenInclude(p => p.Brand)
                 .Include(p => p.SpeakerTestNumber)
                 .Include(p => p.PolicyFiles)
+                .Include(p => p.Agent)
                 .FirstOrDefault();
             if (policy == null)
             {
@@ -70,6 +74,12 @@ namespace Otter.Business.Implementations.Services
                 DiscountCode = dto.DiscountCode,
                 Price = dto.Price
             }, true);
+
+            if (!dto.AgentCode.IsNullOrEmpty())
+            {
+                var agent = _agentService.Get(dto.AgentCode);
+                policy.AgentId = agent.Id;
+            }
 
             policy.PremiumRate = premiumInquiry.PremiumRate;
             policy.FinalPremium = premiumInquiry.FinalPremium;
