@@ -56,6 +56,10 @@ namespace Otter.Common.Entities
         public bool MicrophoneTestState { get; set; }
         public bool ScreenTestState { get; set; }
 
+        public bool ImeiFileState { get; set; }
+        public bool PhoneFileBoxState { get; set; }
+        public bool CameraFileState { get; set; }
+
         public long ModelId { get; set; }
         public long? CityId { get; set; }
         public long SpeakerTestNumberId { get; set; }

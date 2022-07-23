@@ -219,6 +219,7 @@ namespace Otter.Business.Implementations.Services
                 PolicyId = policy.Id,
                 Base64 = imeiFileBase64
             };
+            policy.ImeiFileState = true;
             _unitOfWork.PolicyFileRepository.Add(newFile);
             _unitOfWork.Commit();
 
@@ -257,6 +258,7 @@ namespace Otter.Business.Implementations.Services
                 PolicyId = policy.Id,
                 Base64 = imeiFileBase64
             };
+            policy.PhoneFileBoxState = true;
             _unitOfWork.PolicyFileRepository.Add(newFile);
             _unitOfWork.Commit();
 
@@ -384,6 +386,8 @@ namespace Otter.Business.Implementations.Services
                 PolicyId = policy.Id,
                 Base64 = backCameraBase64Image
             };
+            policy.CameraFileState = true;
+
             _unitOfWork.PolicyFileRepository.Add(newBackFile);
 
             _unitOfWork.Commit();
