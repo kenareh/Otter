@@ -26,7 +26,8 @@ namespace Otter.Business.Dtos
 
         [Display(Name = "آدرس")]
         [Required(ErrorMessage = "ورود {0} الزامی می باشد.", AllowEmptyStrings = false)]
-        [MaxLength(500, ErrorMessage = "حداکثر طول {0} {1} کاراکتر می باشد.")] public string Address { get; set; }
+        [MaxLength(500, ErrorMessage = "حداکثر طول {0} {1} کاراکتر می باشد.")]
+        public string Address { get; set; }
 
         [Display(Name = "شهر")]
         [Required(ErrorMessage = "ورود {0} الزامی می باشد.", AllowEmptyStrings = false)]

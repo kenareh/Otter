@@ -60,6 +60,9 @@ namespace Otter.Common.Entities
         public bool PhoneFileBoxState { get; set; }
         public bool CameraFileState { get; set; }
 
+        [MaxLength(500)]
+        public string Description { get; set; }
+
         public long ModelId { get; set; }
         public long? CityId { get; set; }
         public long SpeakerTestNumberId { get; set; }

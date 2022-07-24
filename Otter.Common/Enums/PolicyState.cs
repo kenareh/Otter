@@ -15,5 +15,11 @@ namespace Otter.Common.Enums
 
         [Description("پرداخت شده")]
         Paid = 3,
+
+        [Description("عدم صحت اطلاعات")]
+        Rejected = 4,
+
+        [Description("صحت اطلاعات تایید شده")]
+        Approved
     }
 }

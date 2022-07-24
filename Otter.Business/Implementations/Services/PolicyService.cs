@@ -65,6 +65,35 @@ namespace Otter.Business.Implementations.Services
             return _policyFactory.CreateDto(policies).ToList();
         }
 
+        public FailedStateValidationDto Validate(long id, FailedStateValidationDto dto)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Id == id)
+                .FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (dto.MicrophoneTestState || dto.CameraFileState ||
+                dto.ImeiFileState || dto.PhoneFileBoxState)
+            {
+                policy.MicrophoneTestState = dto.MicrophoneTestState;
+                policy.CameraFileState = dto.CameraFileState;
+                policy.ImeiFileState = dto.ImeiFileState;
+                policy.PhoneFileBoxState = dto.PhoneFileBoxState;
+                policy.Description = dto.Description;
+                policy.PolicyState = PolicyState.Rejected;
+            }
+            else
+            {
+                policy.PolicyState = PolicyState.Approved;
+            }
+
+            _unitOfWork.Commit();
+
+            return dto;
+        }
+
         public async Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto)
         {
             var policy = _policyFactory.CreateEntityFromBasicInformation(dto);
