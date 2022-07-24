@@ -11,6 +11,8 @@ namespace Otter.Business.Definitions.Services
 
         List<PolicyDto> Get();
 
+        FailedStateValidationDto Validate(long id, FailedStateValidationDto dto);
+
         Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto);
 
         PolicyDto Get(Guid guid);

@@ -55,5 +55,21 @@ namespace Otter.HttpEndPoint.Controllers
                 return BadRequest("خطای غیر منتظره رخ داده است");
             }
         }
+
+        [HttpPost]
+        [Route("{id}/validations")]
+        public ActionResult<FailedStateValidationDto> Validation(long id, FailedStateValidationDto dto)
+        {
+            try
+            {
+                var result = _policyService.Validate(id, dto);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
     }
 }

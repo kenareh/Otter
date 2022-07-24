@@ -16,20 +16,15 @@ namespace Otter.Business.Dtos
 
         public bool IsMobileConfirmed { get; set; }
 
-
         public string Otp { get; set; }
 
         public DateTime OtpExpiredTime { get; set; }
 
-
         public string Imei { get; set; }
 
-    
         public string Firstname { get; set; }
 
-
         public string Lastname { get; set; }
-
 
         public string NationalCode { get; set; }
 
@@ -37,9 +32,7 @@ namespace Otter.Business.Dtos
 
         public DateTime BirthDate { get; set; }
 
-   
         public string Address { get; set; }
-
 
         public long BasePremium { get; set; }
         public long FinalPremium { get; set; }
@@ -52,6 +45,10 @@ namespace Otter.Business.Dtos
         public bool SpeakerTestState { get; set; }
         public bool MicrophoneTestState { get; set; }
         public bool ScreenTestState { get; set; }
+
+        public bool ImeiFileState { get; set; }
+        public bool PhoneFileBoxState { get; set; }
+        public bool CameraFileState { get; set; }
 
         public BaseEnumDto PolicyState { get; set; }
         public long ModelId { get; set; }

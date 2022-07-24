@@ -18,6 +18,7 @@ namespace Otter.DataAccess.SQLServer
         private ISpeakerTestNumberRepository _speakerTestNumberRepository;
         private IBrandRepository _brandRepository;
         private IPaymentRepository _paymentRepository;
+        private IAgentRepository _agentRepository;
 
         public SqlUnitOfWork(ApplicationDbContext dbContext)
         {
@@ -38,6 +39,7 @@ namespace Otter.DataAccess.SQLServer
         public ISpeakerTestNumberRepository SpeakerTestNumberRepository => _speakerTestNumberRepository ??= new SpeakerTestNumberRepository(context);
         public IBrandRepository BrandRepository => _brandRepository ??= new BrandRepository(context);
         public IPaymentRepository PaymentRepository => _paymentRepository ??= new PaymentRepository(context);
+        public IAgentRepository AgentRepository => _agentRepository ??= new AgentRepository(context);
 
         /// <exception cref="DatabaseException">Condition.</exception>
         public void Commit()

@@ -56,6 +56,7 @@ namespace Otter.Business.Dtos
         public ProvinceDto Province { get; set; }
         public BrandDto Brand { get; set; }
         public SpeakerTestNumberDto SpeakerTestNumber { get; set; }
+        public AgentDto Agent { get; set; }
 
         public List<PolicyFileDto> PolicyFiles { get; set; }
     }

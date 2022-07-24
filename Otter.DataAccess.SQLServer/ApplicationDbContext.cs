@@ -33,5 +33,6 @@ namespace Otter.DataAccess.SQLServer
         public DbSet<PolicyFile> PolicyFiles { get; set; }
         public DbSet<SpeakerTestNumber> SpeakerTestNumbers { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Agent> Agents { get; set; }
     }
 }

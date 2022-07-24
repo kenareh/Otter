@@ -11,6 +11,7 @@ using Otter.Business.Dtos;
 using Otter.Common.Entities;
 using Otter.Common.Enums;
 using Otter.Common.Exceptions;
+using Otter.Common.Tools;
 using Otter.DataAccess;
 using Otter.ExternalService.Sms;
 using Otter.ExternalService.Utilities;
@@ -26,9 +27,10 @@ namespace Otter.Business.Implementations.Services
         private IPolicyFileFactory _policyFileFactory;
         private ISpeakerTestNumberService _speakerTestNumberService;
         private IPremiumInquiryService _premiumInquiryService;
+        private IAgentService _agentService;
 
         public PolicyService(IUnitOfWork unitOfWork, IPolicyFactory policyFactory, ISmsService smsService,
-            ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService, IPremiumInquiryService premiumInquiryService)
+            ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService, IPremiumInquiryService premiumInquiryService, IAgentService agentService)
         {
             _unitOfWork = unitOfWork;
             _policyFactory = policyFactory;
@@ -37,6 +39,7 @@ namespace Otter.Business.Implementations.Services
             _policyFileFactory = policyFileFactory;
             _speakerTestNumberService = speakerTestNumberService;
             _premiumInquiryService = premiumInquiryService;
+            _agentService = agentService;
         }
 
         public PolicyFullDto GetFull(long id)
@@ -46,6 +49,7 @@ namespace Otter.Business.Implementations.Services
                 .Include(p => p.Model).ThenInclude(p => p.Brand)
                 .Include(p => p.SpeakerTestNumber)
                 .Include(p => p.PolicyFiles)
+                .Include(p => p.Agent)
                 .FirstOrDefault();
             if (policy == null)
             {
@@ -61,6 +65,35 @@ namespace Otter.Business.Implementations.Services
             return _policyFactory.CreateDto(policies).ToList();
         }
 
+        public FailedStateValidationDto Validate(long id, FailedStateValidationDto dto)
+        {
+            var policy = _unitOfWork.PolicyRepository.Find(p => p.Id == id)
+                .FirstOrDefault();
+            if (policy == null)
+            {
+                throw new EntityNotFoundException("یافت نشد.");
+            }
+
+            if (dto.MicrophoneTestState || dto.CameraFileState ||
+                dto.ImeiFileState || dto.PhoneFileBoxState)
+            {
+                policy.MicrophoneTestState = dto.MicrophoneTestState;
+                policy.CameraFileState = dto.CameraFileState;
+                policy.ImeiFileState = dto.ImeiFileState;
+                policy.PhoneFileBoxState = dto.PhoneFileBoxState;
+                policy.Description = dto.Description;
+                policy.PolicyState = PolicyState.Rejected;
+            }
+            else
+            {
+                policy.PolicyState = PolicyState.Approved;
+            }
+
+            _unitOfWork.Commit();
+
+            return dto;
+        }
+
         public async Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto)
         {
             var policy = _policyFactory.CreateEntityFromBasicInformation(dto);
@@ -70,6 +103,12 @@ namespace Otter.Business.Implementations.Services
                 DiscountCode = dto.DiscountCode,
                 Price = dto.Price
             }, true);
+
+            if (!dto.AgentCode.IsNullOrEmpty())
+            {
+                var agent = _agentService.Get(dto.AgentCode);
+                policy.AgentId = agent.Id;
+            }
 
             policy.PremiumRate = premiumInquiry.PremiumRate;
             policy.FinalPremium = premiumInquiry.FinalPremium;
@@ -209,6 +248,7 @@ namespace Otter.Business.Implementations.Services
                 PolicyId = policy.Id,
                 Base64 = imeiFileBase64
             };
+            policy.ImeiFileState = true;
             _unitOfWork.PolicyFileRepository.Add(newFile);
             _unitOfWork.Commit();
 
@@ -247,6 +287,7 @@ namespace Otter.Business.Implementations.Services
                 PolicyId = policy.Id,
                 Base64 = imeiFileBase64
             };
+            policy.PhoneFileBoxState = true;
             _unitOfWork.PolicyFileRepository.Add(newFile);
             _unitOfWork.Commit();
 
@@ -374,6 +415,8 @@ namespace Otter.Business.Implementations.Services
                 PolicyId = policy.Id,
                 Base64 = backCameraBase64Image
             };
+            policy.CameraFileState = true;
+
             _unitOfWork.PolicyFileRepository.Add(newBackFile);
 
             _unitOfWork.Commit();
