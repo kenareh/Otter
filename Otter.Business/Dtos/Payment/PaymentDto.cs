@@ -5,6 +5,7 @@ namespace Otter.Business.Dtos.Payment
 {
     public class PaymentDto
     {
+        public long Id { get; set; }
         public long PremiumAmount { get; set; }
 
         public string RequestId { get; set; }

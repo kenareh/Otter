@@ -42,6 +42,26 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpGet]
+        [Route("policy-id/{policyId}")]
+        public ActionResult<List<PaymentDto>> GetPaymentsByPolicyId(long policyId)
+        {
+            try
+            {
+                var result = _paymentService.GetByPolicyId(policyId);
+                return Ok(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
         [Route("")]
         public ActionResult<PaymentDto> Get()
         {

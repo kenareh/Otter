@@ -55,6 +55,13 @@ namespace Otter.Business.Implementations.Services
             return _paymentFactory.CreateDto(payments).ToList();
         }
 
+        public List<PaymentDto> GetByPolicyId(long policyId)
+        {
+            var payments = _unitOfWork.PaymentRepository.Find(p => p.PolicyId == policyId).ToList();
+
+            return _paymentFactory.CreateDto(payments).ToList();
+        }
+
         public async Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid)
