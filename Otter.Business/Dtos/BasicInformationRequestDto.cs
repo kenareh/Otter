@@ -27,6 +27,6 @@ namespace Otter.Business.Dtos
         public string DiscountCode { get; set; }
 
         [Display(Name = "کد نماینده")]
-        public string AgentCode { get; set; }
+        public string MarketerCode { get; set; }
     }
 }

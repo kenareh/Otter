@@ -66,12 +66,12 @@ namespace Otter.Common.Entities
         public long ModelId { get; set; }
         public long? CityId { get; set; }
         public long SpeakerTestNumberId { get; set; }
-        public long? AgentId { get; set; }
+        public string MarketerCode { get; set; }
+        public bool IsSendTrackingSms { get; set; }
 
         public virtual Model Model { get; set; }
         public virtual City City { get; set; }
         public virtual SpeakerTestNumber SpeakerTestNumber { get; set; }
-        public virtual Agent Agent { get; set; }
 
         public List<PolicyFile> PolicyFiles { get; set; }
         public List<Payment> Payments { get; set; }

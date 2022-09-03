@@ -46,6 +46,7 @@ namespace Otter.Business.Dtos
         public bool SpeakerTestState { get; set; }
         public bool MicrophoneTestState { get; set; }
         public bool ScreenTestState { get; set; }
+        public string MarketerCode { get; set; }
 
         public BaseEnumDto PolicyState { get; set; }
         public long ModelId { get; set; }
@@ -56,7 +57,6 @@ namespace Otter.Business.Dtos
         public ProvinceDto Province { get; set; }
         public BrandDto Brand { get; set; }
         public SpeakerTestNumberDto SpeakerTestNumber { get; set; }
-        public AgentDto Agent { get; set; }
 
         public List<PolicyFileDto> PolicyFiles { get; set; }
     }

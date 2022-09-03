@@ -168,7 +168,7 @@ namespace Otter.Business.Implementations.Services
                 throw new EntityNotFoundException("پرداخت مورد نظر یافت نشد");
             }
 
-            var uiRedirectUrl = _configuration.GetValue<string>("UIPaymentRedirectUrl") + payment.Guid;
+            var uiRedirectUrl = _configuration.GetValue<string>("UIUrl") + "payment-result/" + payment.Guid;
 
             try
             {

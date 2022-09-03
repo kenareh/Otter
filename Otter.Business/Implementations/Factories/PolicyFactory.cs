@@ -16,9 +16,8 @@ namespace Otter.Business.Implementations.Factories
         private IBrandFactory _brandFactory;
         private ISpeakerTestNumberFactory _speakerTestNumberFactory;
         private IPolicyFileFactory _policyFileFactory;
-        private IAgentFactory _agentFactory;
 
-        public PolicyFactory(ICityFactory cityFactory, IModelFactory modelFactory, IProvinceFactory provinceFactory, IBrandFactory brandFactory, ISpeakerTestNumberFactory speakerTestNumberFactory, IPolicyFileFactory policyFileFactory, IAgentFactory agentFactory)
+        public PolicyFactory(ICityFactory cityFactory, IModelFactory modelFactory, IProvinceFactory provinceFactory, IBrandFactory brandFactory, ISpeakerTestNumberFactory speakerTestNumberFactory, IPolicyFileFactory policyFileFactory)
         {
             _cityFactory = cityFactory;
             _modelFactory = modelFactory;
@@ -26,7 +25,6 @@ namespace Otter.Business.Implementations.Factories
             _brandFactory = brandFactory;
             _speakerTestNumberFactory = speakerTestNumberFactory;
             _policyFileFactory = policyFileFactory;
-            _agentFactory = agentFactory;
         }
 
         public Policy CreateEntityFromBasicInformation(BasicInformationRequestDto dto)
@@ -68,10 +66,6 @@ namespace Otter.Business.Implementations.Factories
             if (entity.SpeakerTestNumber != null)
             {
                 dto.SpeakerTestNumber = _speakerTestNumberFactory.CreateDto(entity.SpeakerTestNumber);
-            }
-            if (entity.Agent != null)
-            {
-                dto.Agent = _agentFactory.CreateDto(entity.Agent);
             }
 
             if (entity.PolicyFiles.Any())

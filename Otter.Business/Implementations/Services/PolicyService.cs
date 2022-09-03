@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Factories;
 using Otter.Business.Definitions.Services;
@@ -13,6 +14,7 @@ using Otter.Common.Enums;
 using Otter.Common.Exceptions;
 using Otter.Common.Tools;
 using Otter.DataAccess;
+using Otter.ExternalService;
 using Otter.ExternalService.Sms;
 using Otter.ExternalService.Utilities;
 
@@ -20,6 +22,7 @@ namespace Otter.Business.Implementations.Services
 {
     public class PolicyService : IPolicyService
     {
+        private IConfiguration _configuration;
         private ILogger<PolicyService> _logger;
         private IUnitOfWork _unitOfWork;
         private IPolicyFactory _policyFactory;
@@ -27,10 +30,11 @@ namespace Otter.Business.Implementations.Services
         private IPolicyFileFactory _policyFileFactory;
         private ISpeakerTestNumberService _speakerTestNumberService;
         private IPremiumInquiryService _premiumInquiryService;
-        private IAgentService _agentService;
+        private ILinkShortenerService _linkShortenerService;
 
         public PolicyService(IUnitOfWork unitOfWork, IPolicyFactory policyFactory, ISmsService smsService,
-            ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService, IPremiumInquiryService premiumInquiryService, IAgentService agentService)
+            ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService,
+            IPremiumInquiryService premiumInquiryService, IConfiguration configuration, ILinkShortenerService linkShortenerService)
         {
             _unitOfWork = unitOfWork;
             _policyFactory = policyFactory;
@@ -39,7 +43,8 @@ namespace Otter.Business.Implementations.Services
             _policyFileFactory = policyFileFactory;
             _speakerTestNumberService = speakerTestNumberService;
             _premiumInquiryService = premiumInquiryService;
-            _agentService = agentService;
+            _configuration = configuration;
+            _linkShortenerService = linkShortenerService;
         }
 
         public PolicyFullDto GetFull(long id)
@@ -49,7 +54,6 @@ namespace Otter.Business.Implementations.Services
                 .Include(p => p.Model).ThenInclude(p => p.Brand)
                 .Include(p => p.SpeakerTestNumber)
                 .Include(p => p.PolicyFiles)
-                .Include(p => p.Agent)
                 .FirstOrDefault();
             if (policy == null)
             {
@@ -104,12 +108,7 @@ namespace Otter.Business.Implementations.Services
                 Price = dto.Price
             }, true);
 
-            if (!dto.AgentCode.IsNullOrEmpty())
-            {
-                var agent = _agentService.Get(dto.AgentCode);
-                policy.AgentId = agent.Id;
-            }
-
+            policy.MarketerCode = dto.MarketerCode;
             policy.PremiumRate = premiumInquiry.PremiumRate;
             policy.FinalPremium = premiumInquiry.FinalPremium;
             policy.BasePremium = premiumInquiry.BasePremium;
@@ -168,7 +167,7 @@ namespace Otter.Business.Implementations.Services
             return policy;
         }
 
-        public PolicyDto MobileConfirmByOtp(Guid guid, string otp)
+        public async Task<PolicyDto> MobileConfirmByOtp(Guid guid, string otp)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid && p.Otp == otp).FirstOrDefault();
             if (policy == null)
@@ -179,6 +178,19 @@ namespace Otter.Business.Implementations.Services
             if (policy.OtpExpiredTime < DateTime.Now)
             {
                 throw new BusinessViolatedException("کد ارسال شده منقضی شده است");
+            }
+            var trackingUrl = _configuration.GetValue<string>("UIUrl") + guid;
+            var shortLink = await _linkShortenerService.ShortLinkAsync(trackingUrl);
+            var message = $"از طریق لینک زیر میتوانید ادامه مراحل خرید بیمه نامه را دنبال فرمایید.\n {shortLink} \n بیمه تجارت نو";
+
+            try
+            {
+                await _smsService.SendAsync(message, new List<string> { policy.Mobile });
+                policy.IsSendTrackingSms = true;
+            }
+            catch (Exception e)
+            {
+                policy.IsSendTrackingSms = false;
             }
 
             policy.IsMobileConfirmed = true;
