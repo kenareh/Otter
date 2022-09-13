@@ -167,7 +167,7 @@ namespace Otter.Business.Implementations.Services
             return policy;
         }
 
-        public async Task<PolicyDto> MobileConfirmByOtp(Guid guid, string otp)
+        public async Task<PolicyDto> MobileConfirmByOtpAsync(Guid guid, string otp)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == guid && p.Otp == otp).FirstOrDefault();
             if (policy == null)
@@ -179,7 +179,7 @@ namespace Otter.Business.Implementations.Services
             {
                 throw new BusinessViolatedException("کد ارسال شده منقضی شده است");
             }
-            var trackingUrl = _configuration.GetValue<string>("UIUrl") + guid;
+            var trackingUrl = _configuration.GetValue<string>("UIUrl") + "policy-state?guid=" + guid;
             var shortLink = await _linkShortenerService.ShortLinkAsync(trackingUrl);
             var message = $"از طریق لینک زیر میتوانید ادامه مراحل خرید بیمه نامه را دنبال فرمایید.\n {shortLink} \n بیمه تجارت نو";
 
@@ -190,12 +190,21 @@ namespace Otter.Business.Implementations.Services
             }
             catch (Exception e)
             {
+                _logger.LogError(e, e.Message);
                 policy.IsSendTrackingSms = false;
             }
 
             policy.IsMobileConfirmed = true;
             policy.PolicyState = PolicyState.MobileConfirmed;
-            _unitOfWork.Commit();
+            try
+            {
+                _unitOfWork.Commit();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
 
             return _policyFactory.CreateDto(policy);
         }

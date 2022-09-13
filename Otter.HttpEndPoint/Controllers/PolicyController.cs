@@ -73,11 +73,11 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpPut]
         [Route("{guid}/mobile-confirmation/{otp}")]
-        public ActionResult<PolicyDto> MobileConfirmation(Guid guid, string otp)
+        public async Task<ActionResult<PolicyDto>> MobileConfirmation(Guid guid, string otp)
         {
             try
             {
-                var result = _policyService.MobileConfirmByOtp(guid, otp);
+                var result = await _policyService.MobileConfirmByOtpAsync(guid, otp);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)
