@@ -49,6 +49,7 @@ namespace Otter.Business.Dtos
         public bool ImeiFileState { get; set; }
         public bool PhoneFileBoxState { get; set; }
         public bool CameraFileState { get; set; }
+        public string MarketerCode { get; set; }
 
         public BaseEnumDto PolicyState { get; set; }
         public long ModelId { get; set; }

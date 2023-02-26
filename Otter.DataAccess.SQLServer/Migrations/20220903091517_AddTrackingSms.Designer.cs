@@ -3,21 +3,49 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Otter.DataAccess.SQLServer;
 
 namespace Otter.DataAccess.SQLServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220903091517_AddTrackingSms")]
+    partial class AddTrackingSms
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Otter.Common.Entities.Agent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
+
+                    b.Property<DateTime>("InsertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Agents");
+                });
 
             modelBuilder.Entity("Otter.Common.Entities.Brand", b =>
                 {
@@ -333,6 +361,9 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<long?>("AgentId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("BasePremium")
                         .HasColumnType("bigint");
 
@@ -389,9 +420,6 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("MarketerCode")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("MicrophoneTestState")
                         .HasColumnType("bit");
 
@@ -438,6 +466,8 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AgentId");
 
                     b.HasIndex("CityId");
 
@@ -550,6 +580,10 @@ namespace Otter.DataAccess.SQLServer.Migrations
 
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
                 {
+                    b.HasOne("Otter.Common.Entities.Agent", "Agent")
+                        .WithMany("Policies")
+                        .HasForeignKey("AgentId");
+
                     b.HasOne("Otter.Common.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId");
@@ -565,6 +599,8 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasForeignKey("SpeakerTestNumberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Agent");
 
                     b.Navigation("City");
 
@@ -582,6 +618,11 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("Otter.Common.Entities.Agent", b =>
+                {
+                    b.Navigation("Policies");
                 });
 
             modelBuilder.Entity("Otter.Common.Entities.Brand", b =>

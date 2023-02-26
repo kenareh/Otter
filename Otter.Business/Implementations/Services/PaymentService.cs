@@ -55,6 +55,13 @@ namespace Otter.Business.Implementations.Services
             return _paymentFactory.CreateDto(payments).ToList();
         }
 
+        public List<PaymentDto> GetByPolicyId(long policyId)
+        {
+            var payments = _unitOfWork.PaymentRepository.Find(p => p.PolicyId == policyId).ToList();
+
+            return _paymentFactory.CreateDto(payments).ToList();
+        }
+
         public async Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Guid == policyGuid)
@@ -161,7 +168,7 @@ namespace Otter.Business.Implementations.Services
                 throw new EntityNotFoundException("پرداخت مورد نظر یافت نشد");
             }
 
-            var uiRedirectUrl = _configuration.GetValue<string>("UIPaymentRedirectUrl") + payment.Guid;
+            var uiRedirectUrl = _configuration.GetValue<string>("UIUrl") + "payment-result?guid=" + payment.Guid;
 
             try
             {

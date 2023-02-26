@@ -12,6 +12,7 @@ using Otter.Business.Implementations.Factories;
 using Otter.Business.Implementations.Services;
 using Otter.DataAccess;
 using Otter.DataAccess.SQLServer;
+using Otter.ExternalService;
 using Otter.ExternalService.Sms;
 using Otter.ExternalService.Utilities;
 
@@ -114,8 +115,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IPaymentFactory, PaymentFactory>();
                 services.AddScoped<ISpeakerTestNumberFactory, SpeakerTestNumberFactory>();
                 services.AddScoped<IDiscountFactory, DiscountFactory>();
-                services.AddScoped<IAgentFactory, AgentFactory>();
-                services.AddScoped<IAgentService, AgentService>();
+                services.AddScoped<ILinkShortenerService, LinkShortenerService>();
             }
             else
             {

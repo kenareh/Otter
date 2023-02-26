@@ -17,7 +17,7 @@ namespace Otter.Business.Definitions.Services
 
         PolicyDto Get(Guid guid);
 
-        PolicyDto MobileConfirmByOtp(Guid guid, string otp);
+        Task<PolicyDto> MobileConfirmByOtpAsync(Guid guid, string otp);
 
         Task ReissueOtpAsync(Guid guid);
 
