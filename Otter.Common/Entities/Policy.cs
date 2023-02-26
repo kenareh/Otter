@@ -47,6 +47,8 @@ namespace Otter.Common.Entities
         public long BasePremium { get; set; }
         public long FinalPremium { get; set; }
         public long Discount { get; set; }
+
+        [MaxLength(20)]
         public string DiscountCode { get; set; }
 
         public double PremiumRate { get; set; }
@@ -66,7 +68,10 @@ namespace Otter.Common.Entities
         public long ModelId { get; set; }
         public long? CityId { get; set; }
         public long SpeakerTestNumberId { get; set; }
+
+        [MaxLength(10)]
         public string MarketerCode { get; set; }
+
         public bool IsSendTrackingSms { get; set; }
 
         public virtual Model Model { get; set; }

@@ -11,7 +11,6 @@ using Otter.HttpEndPoint.Attributes;
 namespace Otter.HttpEndPoint.Controllers
 {
     [Route("api/admin/payments")]
-    [ApiAuthorization("mobile-insurance-admin")]
     public class AdminPaymentController : AuthorizedController
     {
         private ILogger<AdminPaymentController> _logger;

@@ -10,8 +10,8 @@ using Otter.DataAccess.SQLServer;
 namespace Otter.DataAccess.SQLServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220702132618_AddScreenTest")]
-    partial class AddScreenTest
+    [Migration("20230226193956_ChangeLength")]
+    partial class ChangeLength
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,13 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("EnName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -42,6 +49,13 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EnName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasMaxLength(100)
@@ -79,7 +93,37 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         {
                             Id = 1L,
                             Key = "PremiumRate",
-                            Value = "0.3"
+                            Value = "0.04"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Key = "IPGTerminalId",
+                            Value = "08069161"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Key = "IPGAcceptorId",
+                            Value = "992180008069161"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Key = "IPGPassPhrase",
+                            Value = "76FEB0F316883B83"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Key = "IPGAccountNumber",
+                            Value = "0000113939400"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Key = "IPGRsaPublicKey",
+                            Value = "-----BEGIN PUBLIC KEY-----\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDfA/K5iF5s7GqNpBm+mRdZQvmA\r\nmSMpO+65h4jrIEEbS+HoMGWVZsBz+Kmh7PUZX48bqSqIUcIOlF0glxLENGwCaQU2\r\nlMrw1CNODqhEKbP4j2VjZisGgUSGv8fmBEpqBjwT1us6r+z0JwlCXeJ46BLAIyzg\r\n003PX0iRNjhnzSOx7QIDAQAB\r\n-----END PUBLIC KEY-----"
                         });
                 });
 
@@ -201,6 +245,13 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Property<long>("BrandId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("EnName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -210,6 +261,67 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.HasIndex("BrandId");
 
                     b.ToTable("Models", "Base");
+                });
+
+            modelBuilder.Entity("Otter.Common.Entities.Payment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("InsertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("IsSuccessful")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PayerCard")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PaymentId")
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<long>("PolicyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PremiumAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RequestId")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("RetrievalReferenceNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SystemTraceAuditNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Token")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("VerifyDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PolicyId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
@@ -227,21 +339,28 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("BirthDate")
-                        .HasMaxLength(50)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("BirthDateString")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("CameraFileState")
+                        .HasColumnType("bit");
+
                     b.Property<long?>("CityId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<long>("Discount")
                         .HasColumnType("bigint");
 
                     b.Property<string>("DiscountCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<long>("FinalPremium")
                         .HasColumnType("bigint");
@@ -260,12 +379,22 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("ImeiFileState")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsMobileConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSendTrackingSms")
                         .HasColumnType("bit");
 
                     b.Property<string>("Lastname")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MarketerCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("MicrophoneTestState")
                         .HasColumnType("bit");
@@ -287,6 +416,9 @@ namespace Otter.DataAccess.SQLServer.Migrations
 
                     b.Property<DateTime>("OtpExpiredTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("PhoneFileBoxState")
+                        .HasColumnType("bit");
 
                     b.Property<int>("PolicyState")
                         .HasColumnType("int");
@@ -350,6 +482,13 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("EnName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -402,6 +541,17 @@ namespace Otter.DataAccess.SQLServer.Migrations
                     b.Navigation("Brand");
                 });
 
+            modelBuilder.Entity("Otter.Common.Entities.Payment", b =>
+                {
+                    b.HasOne("Otter.Common.Entities.Policy", "Policy")
+                        .WithMany("Payments")
+                        .HasForeignKey("PolicyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Policy");
+                });
+
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
                 {
                     b.HasOne("Otter.Common.Entities.City", "City")
@@ -445,6 +595,8 @@ namespace Otter.DataAccess.SQLServer.Migrations
 
             modelBuilder.Entity("Otter.Common.Entities.Policy", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("PolicyFiles");
                 });
 

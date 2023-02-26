@@ -91,7 +91,7 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         {
                             Id = 1L,
                             Key = "PremiumRate",
-                            Value = "0.3"
+                            Value = "0.04"
                         },
                         new
                         {
@@ -121,7 +121,7 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         {
                             Id = 6L,
                             Key = "IPGRsaPublicKey",
-                            Value = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDfA/K5iF5s7GqNpBm+mRdZQvmAmSMpO+65h4jrIEEbS+HoMGWVZsBz+Kmh7PUZX48bqSqIUcIOlF0glxLENGwCaQU2lMrw1CNODqhEKbP4j2VjZisGgUSGv8fmBEpqBjwT1us6r+z0JwlCXeJ46BLAIyzg003PX0iRNjhnzSOx7QIDAQAB"
+                            Value = "-----BEGIN PUBLIC KEY-----\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDfA/K5iF5s7GqNpBm+mRdZQvmA\r\nmSMpO+65h4jrIEEbS+HoMGWVZsBz+Kmh7PUZX48bqSqIUcIOlF0glxLENGwCaQU2\r\nlMrw1CNODqhEKbP4j2VjZisGgUSGv8fmBEpqBjwT1us6r+z0JwlCXeJ46BLAIyzg\r\n003PX0iRNjhnzSOx7QIDAQAB\r\n-----END PUBLIC KEY-----"
                         });
                 });
 
@@ -357,7 +357,8 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("DiscountCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<long>("FinalPremium")
                         .HasColumnType("bigint");
@@ -390,7 +391,8 @@ namespace Otter.DataAccess.SQLServer.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MarketerCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("MicrophoneTestState")
                         .HasColumnType("bit");

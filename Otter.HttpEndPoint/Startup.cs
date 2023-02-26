@@ -61,7 +61,7 @@ namespace Otter.HttpEndPoint
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("RequiredTravelPolicyScopes", policy =>
+                options.AddPolicy("RequiredMobileInsuranceScopes", policy =>
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim("scope", "mobile-insurance");
@@ -97,6 +97,7 @@ namespace Otter.HttpEndPoint
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

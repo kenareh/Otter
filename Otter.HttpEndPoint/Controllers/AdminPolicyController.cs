@@ -10,7 +10,6 @@ using Otter.HttpEndPoint.Attributes;
 namespace Otter.HttpEndPoint.Controllers
 {
     [Route("api/admin/policies")]
-    [ApiAuthorization("mobile-insurance-admin")]
     public class AdminPolicyController : AuthorizedController
     {
         private ILogger<AdminPolicyController> _logger;
