@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Otter.Business.Definitions.Factories;
 using Otter.Business.Definitions.Services;
@@ -43,6 +44,29 @@ namespace Otter.HttpEndPoint
                     {
                         builder.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader();
                     });
+            });
+
+            // *Add Authentication & Authorization
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://accounts.tejaratnoins.ir";
+                    options.Audience = "mobile-insurance";
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        RequireAudience = true,
+                        ValidateAudience = true
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequiredTravelPolicyScopes", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "mobile-insurance");
+                    policy.RequireClaim("scope", "access-management");
+                });
             });
 
             DependencyInjection(services);

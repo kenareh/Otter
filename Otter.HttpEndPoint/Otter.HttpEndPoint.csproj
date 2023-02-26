@@ -6,6 +6,7 @@
 
   <ItemGroup>
 	  <Content Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.32" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,10 +24,6 @@
     <ProjectReference Include="..\Otter.DataAccess.SQLServer\Otter.DataAccess.SQLServer.csproj" />
     <ProjectReference Include="..\Otter.DataAccess\Otter.DataAccess.csproj" />
     <ProjectReference Include="..\Otter.ExternalService\Otter.ExternalService.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Attributes\" />
   </ItemGroup>
 
 

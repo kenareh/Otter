@@ -5,10 +5,12 @@ using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
 using Otter.Common.Exceptions;
+using Otter.HttpEndPoint.Attributes;
 
 namespace Otter.HttpEndPoint.Controllers
 {
     [Route("api/admin/policies")]
+    [ApiAuthorization("mobile-insurance-admin")]
     public class AdminPolicyController : AuthorizedController
     {
         private ILogger<AdminPolicyController> _logger;

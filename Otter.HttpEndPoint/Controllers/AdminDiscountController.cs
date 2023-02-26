@@ -4,10 +4,12 @@ using Microsoft.Extensions.Logging;
 using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos.Discount;
 using Otter.Common.Exceptions;
+using Otter.HttpEndPoint.Attributes;
 
 namespace Otter.HttpEndPoint.Controllers
 {
     [Route("api/admin/discounts")]
+    [ApiAuthorization("mobile-insurance-admin")]
     public class AdminDiscountController : AuthorizedController
     {
         private ILogger<AdminDiscountController> _logger;

@@ -6,10 +6,12 @@ using Otter.Business.Definitions.Services;
 using Otter.Business.Dtos;
 using Otter.Business.Dtos.Payment;
 using Otter.Common.Exceptions;
+using Otter.HttpEndPoint.Attributes;
 
 namespace Otter.HttpEndPoint.Controllers
 {
     [Route("api/admin/payments")]
+    [ApiAuthorization("mobile-insurance-admin")]
     public class AdminPaymentController : AuthorizedController
     {
         private ILogger<AdminPaymentController> _logger;
