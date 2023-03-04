@@ -111,11 +111,18 @@ namespace Otter.Business.Implementations.Services
                     PercentDiscount = dto.PercentDiscount,
                     RemainingLimitedCount = dto.RemainingLimitedCount,
                     StartDate = dto.StartDate,
-                    Code = GetNewDiscountCode(8)
+                    Code = GetNewDiscountCode(8),
+                    Serial = GetSerial()
                 };
                 _unitOfWork.DiscountRepository.Add(discount);
                 _unitOfWork.Commit();
             }
+        }
+
+        private long GetSerial()
+        {
+            var maxSerial = _unitOfWork.DiscountRepository.GetAll().Max(p => p.Serial);
+            return maxSerial + 1;
         }
 
         public DiscountDto Update(UpdateDiscountDto dto)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Otter.Business.Dtos;
 using Otter.Business.Dtos.Payment;
+using PaymentRequestResultDto = Otter.ExternalService.Dto.PaymentRequestResultDto;
 
 namespace Otter.Business.Definitions.Services
 {
@@ -14,10 +15,10 @@ namespace Otter.Business.Definitions.Services
 
         List<PaymentDto> GetByPolicyId(long policyId);
 
-        Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid);
-
-        Task<string> VerifyAsync(string token, string responseCode, string acceptorId, string amount, string paymentId, string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan);
+        Task<PaymentRequestResultDto> InsertPaymentRequestAsync(Guid policyGuid, string redirectUrl);
 
         PaymentDto Get(Guid guid);
+
+        Task<string> CallBackAsync(Guid guid);
     }
 }

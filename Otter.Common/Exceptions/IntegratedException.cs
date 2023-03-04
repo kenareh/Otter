@@ -1,23 +1,15 @@
-﻿using System;
+﻿using Otter.Common.Enums;
+using System;
 
 namespace Otter.Common.Exceptions
 {
     public class IntegratedException : Exception
     {
-        public string ServiceName { get; protected set; }
+        public ApiResultStatusCode ApiResultStatusCode { get; set; }
 
-        public IntegratedException()
+        public IntegratedException(string message, ApiResultStatusCode apiResultStatusCode) : base(message)
         {
-        }
-
-        public IntegratedException(string message, string serviceName) : base(message)
-        {
-            this.ServiceName = serviceName;
-        }
-
-        public override string ToString()
-        {
-            return $"Can not to integrate to {ServiceName}.";
+            ApiResultStatusCode = apiResultStatusCode;
         }
     }
 }

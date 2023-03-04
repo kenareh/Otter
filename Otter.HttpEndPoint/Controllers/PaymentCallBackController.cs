@@ -23,19 +23,20 @@ namespace Otter.HttpEndPoint.Controllers
             _configuration = configuration;
         }
 
-        [Route("")]
-        public async Task<ActionResult> IranKishCallBack(string token, string responseCode,
-            string acceptorId, string amount, string paymentId,
-            string requestId, string retrievalReferenceNumber, string systemTraceAuditNumber, string maskedPan)
+        [HttpGet]
+        public async Task<ActionResult<string>> PostPayCallBackAsync(Guid guid)
         {
             try
             {
-                var result = await _paymentService.VerifyAsync(token, responseCode, acceptorId, amount, paymentId, requestId, retrievalReferenceNumber, systemTraceAuditNumber, maskedPan);
+                var result = await _paymentService.CallBackAsync(guid);
                 return Redirect(result);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, e.Message);
                 return BadRequest("خطای غیر منتظره رخ داده است");
             }
         }

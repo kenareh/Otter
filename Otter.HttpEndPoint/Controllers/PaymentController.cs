@@ -31,11 +31,11 @@ namespace Otter.HttpEndPoint.Controllers
         {
             try
             {
-                var result = await _paymentService.InsertPaymentRequestAsync(policyGuid);
-       
-                var url =  Url.ActionLink("PaymentRedirect", "Home", result);
-                    
-                return Ok(url);
+                var callbackAddress = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host.Value + "/api/payment-callback";
+
+                var result = await _paymentService.InsertPaymentRequestAsync(policyGuid, callbackAddress);
+
+                return Redirect(result.RedirectUrl);
             }
             catch (EntityNotFoundException e)
             {

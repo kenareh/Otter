@@ -10,6 +10,8 @@ namespace Otter.Common.Entities
         [MaxLength(50)]
         public string Code { get; set; }
 
+        public long Serial { get; set; }
+
         public DiscountType DiscountType { get; set; }
         public long? AbsoluteDiscount { get; set; }
         public int? PercentDiscount { get; set; }

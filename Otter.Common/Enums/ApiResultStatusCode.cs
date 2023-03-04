@@ -16,8 +16,17 @@ namespace Otter.Common.Enums
         [Description("خطای دسترسی")]
         Forbidden = 403,
 
-        [Description("یافت نشد")]
+        [Description("منبع اطلاعاتی موردنظر یافت نشد")]
         NotFound = 404,
+
+        [Description("متد موردنظر مجاز نمی باشد")]
+        MethodNotAllowed = 405,
+
+        [Description("محتوایی مطابق معیار ارائه شده، یافت نشد")]
+        NotAcceptable = 406,
+
+        [Description("درحال حاضر سرور پاسخگو نیست")]
+        RequestTimeout = 408,
 
         [Description("خطایی در سرور رخ داده است")]
         ServerError = 500,

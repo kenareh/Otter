@@ -141,6 +141,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<ISpeakerTestNumberFactory, SpeakerTestNumberFactory>();
                 services.AddScoped<IDiscountFactory, DiscountFactory>();
                 services.AddScoped<ILinkShortenerService, LinkShortenerService>();
+                services.AddScoped<IHttpClientService, HttpClientService>();
             }
             else
             {
