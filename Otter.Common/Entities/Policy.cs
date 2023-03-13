@@ -74,6 +74,11 @@ namespace Otter.Common.Entities
 
         public bool IsSendTrackingSms { get; set; }
 
+        [MaxLength(100)]
+        public string ShortUrl { get; set; }
+
+        public DateTime InsertDate { get; set; }
+
         public virtual Model Model { get; set; }
         public virtual City City { get; set; }
         public virtual SpeakerTestNumber SpeakerTestNumber { get; set; }

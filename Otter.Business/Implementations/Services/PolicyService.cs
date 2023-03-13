@@ -69,7 +69,7 @@ namespace Otter.Business.Implementations.Services
             return _policyFactory.CreateDto(policies).ToList();
         }
 
-        public FailedStateValidationDto Validate(long id, FailedStateValidationDto dto)
+        public async Task<FailedStateValidationDto> ValidateAsync(long id, FailedStateValidationDto dto)
         {
             var policy = _unitOfWork.PolicyRepository.Find(p => p.Id == id)
                 .FirstOrDefault();
@@ -87,6 +87,19 @@ namespace Otter.Business.Implementations.Services
                 policy.PhoneFileBoxState = dto.PhoneFileBoxState;
                 policy.Description = dto.Description;
                 policy.PolicyState = PolicyState.Rejected;
+
+                var message = $"درخواست بیمه نامه موبایل شما رد شد. از طریق لینک زیر نسبت به تکمیل فرآیند اقدام فرمایید.\n {policy.ShortUrl} \n بیمه تجارت نو";
+
+                try
+                {
+                    await _smsService.SendAsync(message, new List<string> { policy.Mobile });
+                    policy.IsSendTrackingSms = true;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, e.Message);
+                    policy.IsSendTrackingSms = false;
+                }
             }
             else
             {
@@ -114,6 +127,7 @@ namespace Otter.Business.Implementations.Services
             policy.BasePremium = premiumInquiry.BasePremium;
             policy.Discount = premiumInquiry.Discount;
             policy.DiscountCode = dto.DiscountCode;
+            policy.InsertDate = DateTime.Now;
 
             Random rnd = new Random();
             int num = rnd.Next(11111, 99999);
@@ -181,6 +195,7 @@ namespace Otter.Business.Implementations.Services
             }
             var trackingUrl = _configuration.GetValue<string>("UIUrl") + "policy-state?guid=" + guid;
             var shortLink = await _linkShortenerService.ShortLinkAsync(trackingUrl);
+            policy.ShortUrl = shortLink;
             var message = $"از طریق لینک زیر میتوانید ادامه مراحل خرید بیمه نامه را دنبال فرمایید.\n {shortLink} \n بیمه تجارت نو";
 
             try
@@ -471,6 +486,19 @@ namespace Otter.Business.Implementations.Services
             _unitOfWork.Commit();
 
             return _policyFactory.CreateDto(policy);
+        }
+
+        public byte[] GetExcelPoliciesForIssue(FilterRequestDto dto, string fileName)
+        {
+            var policies = _unitOfWork.PolicyRepository.Find(p => p.PolicyState == PolicyState.Approved
+                                                                && p.InsertDate.Date >= dto.FromDateTime.Date
+                                                                && p.InsertDate.Date <= dto.ToDateTime)
+                .Include(p => p.City).ThenInclude(p => p.Province)
+                .Include(p => p.Model).ThenInclude(p => p.Brand).ToList();
+
+            var excelData = policies.Select(p => new FannavaranExcelDto());
+            var result = ExportToExcel.ExportToXlsx<FannavaranExcelDto>(excelData.ToList(), fileName);
+            return result;
         }
     }
 }
