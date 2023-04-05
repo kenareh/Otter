@@ -15,6 +15,7 @@ using Otter.Common.Exceptions;
 using Otter.Common.Tools;
 using Otter.DataAccess;
 using Otter.ExternalService;
+using Otter.ExternalService.Dto;
 using Otter.ExternalService.Sms;
 using Otter.ExternalService.Utilities;
 
@@ -31,10 +32,11 @@ namespace Otter.Business.Implementations.Services
         private ISpeakerTestNumberService _speakerTestNumberService;
         private IPremiumInquiryService _premiumInquiryService;
         private ILinkShortenerService _linkShortenerService;
+        private ICentralInsuranceIdentityInquiry _centralInsuranceIdentityInquiry;
 
         public PolicyService(IUnitOfWork unitOfWork, IPolicyFactory policyFactory, ISmsService smsService,
             ILogger<PolicyService> logger, IPolicyFileFactory policyFileFactory, ISpeakerTestNumberService speakerTestNumberService,
-            IPremiumInquiryService premiumInquiryService, IConfiguration configuration, ILinkShortenerService linkShortenerService)
+            IPremiumInquiryService premiumInquiryService, IConfiguration configuration, ILinkShortenerService linkShortenerService, ICentralInsuranceIdentityInquiry centralInsuranceIdentityInquiry)
         {
             _unitOfWork = unitOfWork;
             _policyFactory = policyFactory;
@@ -45,6 +47,7 @@ namespace Otter.Business.Implementations.Services
             _premiumInquiryService = premiumInquiryService;
             _configuration = configuration;
             _linkShortenerService = linkShortenerService;
+            _centralInsuranceIdentityInquiry = centralInsuranceIdentityInquiry;
         }
 
         public PolicyFullDto GetFull(long id)
@@ -63,9 +66,16 @@ namespace Otter.Business.Implementations.Services
             return _policyFactory.CreateFullDto(policy);
         }
 
-        public List<PolicyDto> Get()
+        public List<PolicyDto> Get(FilterRequestDto dto)
         {
-            var policies = _unitOfWork.PolicyRepository.Find().ToList();
+            var policies = _unitOfWork.PolicyRepository.Find(p => p.InsertDate.Date >= dto.FromDateTime.Date
+                                                                && p.InsertDate.Date <= dto.ToDateTime).ToList();
+            return _policyFactory.CreateDto(policies).ToList();
+        }
+
+        public List<PolicyDto> GetUncompleted()
+        {
+            var policies = _unitOfWork.PolicyRepository.Find(p => p.PolicyState != PolicyState.Approved).ToList();
             return _policyFactory.CreateDto(policies).ToList();
         }
 
@@ -126,6 +136,8 @@ namespace Otter.Business.Implementations.Services
             policy.FinalPremium = premiumInquiry.FinalPremium;
             policy.BasePremium = premiumInquiry.BasePremium;
             policy.Discount = premiumInquiry.Discount;
+            var percent = premiumInquiry.FinalPremium / (decimal)premiumInquiry.BasePremium * 100;
+            policy.DiscountPercent = 100 - Convert.ToInt32(percent);
             policy.DiscountCode = dto.DiscountCode;
             policy.InsertDate = DateTime.Now;
 
@@ -471,7 +483,7 @@ namespace Otter.Business.Implementations.Services
             return _policyFileFactory.CreateDto(files).ToList();
         }
 
-        public PolicyDto InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
+        public async Task<PolicyDto> InsertPersonalInformationAsync(Guid guid, PersonalInfoDto dto)
         {
             var policy = GetValidPolicy(guid);
 
@@ -479,10 +491,19 @@ namespace Otter.Business.Implementations.Services
             policy.Lastname = dto.Lastname;
             policy.NationalCode = dto.NationalCode;
             policy.BirthDate = dto.BirthDate;
-            policy.BirthDateString = dto.BirthDate.ToString(CultureInfo.InvariantCulture);
+            policy.BirthDateString = dto.BirthDate.ToString();
             policy.Address = dto.Address;
             policy.CityId = dto.CityId;
 
+            CentralInsuranceIdentityInquiryResultDto inquiry;
+
+            inquiry = await _centralInsuranceIdentityInquiry.InquiryAsync(dto.NationalCode,
+                Convert.ToInt32(dto.BirthDate.GetJalaliYear()));
+
+            policy.FatherName = inquiry.FatherName;
+            policy.ShenasnameNo = inquiry.ShenasnameNo;
+            policy.Gender = (Gender)inquiry.Gender.Id;
+            policy.PostalCode = inquiry.Zipcode;
             _unitOfWork.Commit();
 
             return _policyFactory.CreateDto(policy);
@@ -496,9 +517,98 @@ namespace Otter.Business.Implementations.Services
                 .Include(p => p.City).ThenInclude(p => p.Province)
                 .Include(p => p.Model).ThenInclude(p => p.Brand).ToList();
 
-            var excelData = policies.Select(p => new FannavaranExcelDto());
-            var result = ExportToExcel.ExportToXlsx<FannavaranExcelDto>(excelData.ToList(), fileName);
+            var excelData = policies.Select(p => new FannavaranExcelDto()
+            {
+                PersonKind = 46.ToString(),
+                PersonName = p.Firstname,
+                PersonLName = p.Lastname,
+                IsIranian = 1.ToString(),
+                // Nationality =
+                CodeMelli = p.NationalCode,
+                // UnIranianCode =
+                PersonJens = GetFannavaranGender(p.Gender).ToString(),
+                BirthYear = p.BirthDate.GetJalaliYear(),
+                // GElhNo =
+                BirthMonth = p.BirthDate.GetJalaliMonth(),
+                BirthDay = p.BirthDate.GetJalaliDay(),
+                IdentityNo = p.ShenasnameNo.ToString(),
+                SodurPlace = p.City.Name,
+                FatherName = p.FatherName,
+                // Economic =
+                // CompanyCode =
+                // SabtNo =
+                Tel = "88888888",
+                Mobile = p.Mobile,
+                // CodePosti = p. todo
+                PersonAddress = p.Address,
+                PayerPersonKind = "46",
+                PayerPersonName = p.Firstname,
+                PayerPersonLName = p.Lastname,
+                // PayerNationality =
+                PayerCodeMelli = p.NationalCode,
+                // PayerUnIranianCode =
+                PayerPersonJens = GetFannavaranGender(p.Gender).ToString(),
+
+                PayerBirthYear = p.BirthDate.GetJalaliYear(),
+                PayerBirthMonth = p.BirthDate.GetJalaliMonth(),
+                PayerBirthDay = p.BirthDate.GetJalaliDay(),
+
+                PayerIdentityNo = p.ShenasnameNo.ToString(),
+                PayerSodurPlace = p.City.Name,
+                PayerFatherName = p.FatherName,
+                // PayerEconomic =
+                // PayerCompanyCode =
+                // PayerSabtNo =
+
+                PayerMobile = p.Mobile,
+                PayerTel = "88888888",
+                // PayerCodePosti = todo
+                PayerPersonAddress = p.Address,
+                BeginDate = p.InsertDate.ToJalaliDate(),
+                EndDate = p.InsertDate.AddYears(1).ToJalaliDate(),
+
+                // LastBimeCompany =
+                // ExtendedBNNo =
+                // InternalOldBId =
+                // ExtendedBNNo =
+                TakhfifPercent = p.DiscountPercent.ToString(),
+                // FishNo =
+                // FishDate =
+                // Bank =
+                // BankBranch =
+                // BankBranchNumber =
+                Name = p.Model.Name,
+                Brand = p.Model.Brand.Name,
+                SerialNo = p.Imei,
+
+                // ManufactureYear = p. todo
+
+                PartOneSarmaye = p.Price.ToString(),
+                NerkhPartOne = p.PremiumRate.ToString(),
+                PartOneHB = p.FinalPremium.ToString(),
+
+                // PartTwoSarmaye =
+                // FranshizDarsadPartTwo =
+                // MinFranshizPartTwo =
+                // PartTwoHB =
+
+                FillPayerFromBimegozar = "1"
+            })
+                .ToList();
+            var result = ExportToExcel.ExportToXlsx(excelData, fileName);
             return result;
+        }
+
+        private int GetFannavaranGender(Gender gender)
+        {
+            if (gender == Gender.Man)
+            {
+                return 26; //man
+            }
+            else
+            {
+                return 27; //woman
+            }
         }
     }
 }

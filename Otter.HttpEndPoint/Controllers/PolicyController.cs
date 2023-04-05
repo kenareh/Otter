@@ -56,6 +56,10 @@ namespace Otter.HttpEndPoint.Controllers
                         var result = await _policyService.InsertBasicInformation(dto);
                         return Ok(result);
                     }
+                    catch (BusinessViolatedException e)
+                    {
+                        return NotFound(e.Message);
+                    }
                     catch (EntityNotFoundException e)
                     {
                         return NotFound(e.Message);
@@ -361,14 +365,18 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpPut]
         [Route("{guid}/personal-information")]
-        public ActionResult<PolicyDto> InsertPersonalInformation(Guid guid, PersonalInfoDto dto)
+        public async Task<ActionResult<PolicyDto>> InsertPersonalInformationAsync(Guid guid, PersonalInfoDto dto)
         {
             try
             {
-                var result = _policyService.InsertPersonalInformation(guid, dto);
+                var result = await _policyService.InsertPersonalInformationAsync(guid, dto);
                 return Ok(result);
             }
             catch (EntityNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BusinessViolatedException e)
             {
                 return NotFound(e.Message);
             }

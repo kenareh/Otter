@@ -30,7 +30,7 @@ namespace Otter.Business.Implementations.Services
             var currency = _unitOfWork.CurrencyRepository.Find(p => p.Id == id).FirstOrDefault();
             if (currency == null)
             {
-                throw new EntityNotFoundException("currency", id.ToString(), typeof(CurrencyDto));
+                throw new EntityNotFoundException("currency");
             }
 
             return _currencyFactory.CreateDto(currency);

@@ -142,6 +142,7 @@ namespace Otter.HttpEndPoint
                 services.AddScoped<IDiscountFactory, DiscountFactory>();
                 services.AddScoped<ILinkShortenerService, LinkShortenerService>();
                 services.AddScoped<IHttpClientService, HttpClientService>();
+                services.AddScoped<ICentralInsuranceIdentityInquiry, CentralInsuranceIdentityInquiry>();
             }
             else
             {

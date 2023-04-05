@@ -12,6 +12,12 @@ namespace Otter.Common.Entities
         public long Price { get; set; }
         public bool GuarantyStatus { get; set; }
 
+        public Gender Gender { get; set; }
+        public int ShenasnameNo { get; set; }
+
+        [MaxLength(100)]
+        public string FatherName { get; set; }
+
         [MaxLength(12)]
         public string Mobile { get; set; }
 
@@ -42,11 +48,15 @@ namespace Otter.Common.Entities
         [MaxLength(500)]
         public string Address { get; set; }
 
+        [MaxLength(20)]
+        public string PostalCode { get; set; }
+
         public PolicyState PolicyState { get; set; }
 
         public long BasePremium { get; set; }
         public long FinalPremium { get; set; }
         public long Discount { get; set; }
+        public int DiscountPercent { get; set; }
 
         [MaxLength(20)]
         public string DiscountCode { get; set; }

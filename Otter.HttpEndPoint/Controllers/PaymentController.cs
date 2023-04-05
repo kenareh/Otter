@@ -27,7 +27,7 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpGet]
         [Route("requests/policy-id/{policyGuid}")]
-        public async Task<ActionResult<PaymentRequestResultDto>> InsertPaymentRequestAsync(Guid policyGuid)
+        public async Task<ActionResult> InsertPaymentRequestAsync(Guid policyGuid)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace Otter.HttpEndPoint.Controllers
 
                 var result = await _paymentService.InsertPaymentRequestAsync(policyGuid, callbackAddress);
 
-                return Redirect(result.RedirectUrl);
+                return Ok(result.RedirectUrl);
             }
             catch (EntityNotFoundException e)
             {

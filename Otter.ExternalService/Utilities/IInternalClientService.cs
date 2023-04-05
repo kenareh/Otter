@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Otter.Common.Enums;
@@ -27,15 +28,19 @@ namespace Otter.ExternalService.Utilities
         /// <exception cref="IntegratedException"></exception>
         /// <exception cref="BusinessViolatedException"></exception>
         Task PostAsync(string path, object data);
+
+        string GetPath(ServiceUrl url);
     }
 
     public class InternalClientService : IInternalClientService
     {
         private ILogger<InternalClientService> _logger;
+        private readonly IConfiguration _configuration;
 
-        public InternalClientService(ILogger<InternalClientService> logger)
+        public InternalClientService(ILogger<InternalClientService> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         #region Methods
@@ -175,6 +180,27 @@ namespace Otter.ExternalService.Utilities
             if (apiResult != null && apiResult.IsSuccess == false)
             {
                 throw new BusinessViolatedException(apiResult.Message, apiResult.StatusCode);
+            }
+        }
+
+        public string GetPath(ServiceUrl url)
+        {
+            switch (url)
+            {
+                case ServiceUrl.ExternalService:
+                    return _configuration.GetSection("ExternalServiceMiddleware:Address").Value;
+
+                case ServiceUrl.FannavaranMiddleware:
+                    return _configuration.GetSection("FannavaranMiddleware:Address").Value;
+
+                case ServiceUrl.FannavaranApi:
+                    return _configuration.GetSection("FannavaranApi:Address").Value;
+
+                case ServiceUrl.ShortLink:
+                    return _configuration.GetSection("ShortLink:Address").Value;
+
+                default:
+                    return string.Empty;
             }
         }
 

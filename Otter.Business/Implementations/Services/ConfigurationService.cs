@@ -40,34 +40,6 @@ namespace Otter.Business.Implementations.Services
             }
             paymentConfiguration.TerminalId = terminalId.Value;
 
-            var acceptorId = _unitOfWork.ConfigurationRepository.Find(p => p.Key == "IPGAcceptorId").FirstOrDefault();
-            if (acceptorId == null)
-            {
-                throw new EntityNotFoundException("شماره پذیرنده موجود نمی باشد");
-            }
-            paymentConfiguration.AcceptorId = acceptorId.Value;
-
-            var passPhrase = _unitOfWork.ConfigurationRepository.Find(p => p.Key == "IPGPassPhrase").FirstOrDefault();
-            if (passPhrase == null)
-            {
-                throw new EntityNotFoundException("PassPhrase موجود نمی باشد");
-            }
-            paymentConfiguration.PassPhrase = passPhrase.Value;
-
-            var rsaPublicKey = _unitOfWork.ConfigurationRepository.Find(p => p.Key == "IPGRsaPublicKey").FirstOrDefault();
-            if (passPhrase == null)
-            {
-                throw new EntityNotFoundException("RsaPublicKey موجود نمی باشد");
-            }
-            paymentConfiguration.RsaPublicKey = rsaPublicKey.Value;
-
-            var accountNumber = _unitOfWork.ConfigurationRepository.Find(p => p.Key == "IPGAccountNumber").FirstOrDefault();
-            if (accountNumber == null)
-            {
-                throw new EntityNotFoundException("شماره حساب موجود نمی باشد");
-            }
-            paymentConfiguration.AccountNumber = accountNumber.Value;
-
             return paymentConfiguration;
         }
     }

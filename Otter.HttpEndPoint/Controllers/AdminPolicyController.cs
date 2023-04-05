@@ -45,11 +45,27 @@ namespace Otter.HttpEndPoint.Controllers
 
         [HttpGet]
         [Route("")]
-        public ActionResult<List<PolicyDto>> Get()
+        public ActionResult<List<PolicyDto>> Get(FilterRequestDto dto)
         {
             try
             {
-                var result = _policyService.Get();
+                var result = _policyService.Get(dto);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpGet]
+        [Route("uncompleted")]
+        public ActionResult<List<PolicyDto>> GetUncompleted()
+        {
+            try
+            {
+                var result = _policyService.GetUncompleted();
                 return Ok(result);
             }
             catch (Exception e)
@@ -81,7 +97,7 @@ namespace Otter.HttpEndPoint.Controllers
         {
             try
             {
-                var date = JalaliCalendar.MiladiToShamsiDate(DateTime.Now).Replace("/", string.Empty);
+                var date = JalaliCalendar.ToJalaliDate(DateTime.Now).Replace("/", string.Empty);
                 var fileName = $"Proposals_{date}";
 
                 byte[] data = _policyService.GetExcelPoliciesForIssue(dto, fileName);

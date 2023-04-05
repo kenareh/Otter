@@ -132,8 +132,10 @@ namespace Otter.Business.Implementations.Services
                 CallBackRedirectUrl = redirectUrl
             };
 
+            PaymentRequestResultDto paymentRequestResult;
+
             var paymentBaseUrl = _httpClientService.GetPath(ServiceUrl.IPG);
-            var paymentRequestResult = await _httpClientService.PostAsync<PaymentRequestResultDto>(paymentBaseUrl + "payments/requests", request);
+            paymentRequestResult = await _httpClientService.PostAsync<PaymentRequestResultDto>(paymentBaseUrl + "payments/requests", request);
 
             var payment = new Payment()
             {

@@ -7,8 +7,8 @@ using Otter.HttpEndPoint.Attributes;
 
 namespace Otter.HttpEndPoint.Controllers
 {
-    [Authorize("RequiredMobileInsuranceScopes")]
-    [ApiAuthorization("mobile-insurance-admin")]
+    // [Authorize("RequiredMobileInsuranceScopes")]
+    // [ApiAuthorization("mobile-insurance-admin")]
     [ApiController]
     public class AuthorizedController : ControllerBase
     {

@@ -9,7 +9,9 @@ namespace Otter.Business.Definitions.Services
     {
         PolicyFullDto GetFull(long id);
 
-        List<PolicyDto> Get();
+        List<PolicyDto> Get(FilterRequestDto dto);
+
+        List<PolicyDto> GetUncompleted();
 
         Task<FailedStateValidationDto> ValidateAsync(long id, FailedStateValidationDto dto);
 
@@ -45,7 +47,7 @@ namespace Otter.Business.Definitions.Services
 
         List<PolicyFileDto> GetCameraFiles(Guid guid);
 
-        PolicyDto InsertPersonalInformation(Guid guid, PersonalInfoDto dto);
+        Task<PolicyDto> InsertPersonalInformationAsync(Guid guid, PersonalInfoDto dto);
 
         byte[] GetExcelPoliciesForIssue(FilterRequestDto dto, string fileName);
     }
