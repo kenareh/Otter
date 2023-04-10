@@ -23,6 +23,38 @@ namespace Otter.HttpEndPoint.Controllers
             _logger = logger;
         }
 
+        [HttpPost]
+        [Route("{id}/validations")]
+        public ActionResult<FailedStateValidationDto> Validation(long id, FailedStateValidationDto dto)
+        {
+            try
+            {
+                var result = _policyService.ValidateAsync(id, dto);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
+        [HttpPost]
+        [Route("validations")]
+        public ActionResult<bool> MassValidation(List<long> ids)
+        {
+            try
+            {
+                var result = _policyService.Validate(ids);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return BadRequest("خطای غیر منتظره رخ داده است");
+            }
+        }
+
         [HttpGet]
         [Route("{id}")]
         public ActionResult<PolicyFullDto> Get(long id)
@@ -43,7 +75,7 @@ namespace Otter.HttpEndPoint.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("")]
         public ActionResult<List<PolicyDto>> Get(FilterRequestDto dto)
         {
@@ -60,28 +92,12 @@ namespace Otter.HttpEndPoint.Controllers
         }
 
         [HttpGet]
-        [Route("uncompleted")]
+        [Route("uncompleted-paid")]
         public ActionResult<List<PolicyDto>> GetUncompleted()
         {
             try
             {
-                var result = _policyService.GetUncompleted();
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return BadRequest("خطای غیر منتظره رخ داده است");
-            }
-        }
-
-        [HttpPost]
-        [Route("{id}/validations")]
-        public ActionResult<FailedStateValidationDto> Validation(long id, FailedStateValidationDto dto)
-        {
-            try
-            {
-                var result = _policyService.ValidateAsync(id, dto);
+                var result = _policyService.GetUncompletedPaid();
                 return Ok(result);
             }
             catch (Exception e)

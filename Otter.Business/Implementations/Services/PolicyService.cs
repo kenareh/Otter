@@ -69,14 +69,117 @@ namespace Otter.Business.Implementations.Services
         public List<PolicyDto> Get(FilterRequestDto dto)
         {
             var policies = _unitOfWork.PolicyRepository.Find(p => p.InsertDate.Date >= dto.FromDateTime.Date
-                                                                && p.InsertDate.Date <= dto.ToDateTime).ToList();
+                                                                && p.InsertDate.Date <= dto.ToDateTime.Date).ToList();
             return _policyFactory.CreateDto(policies).ToList();
         }
 
-        public List<PolicyDto> GetUncompleted()
+        public List<PolicyDto> GetUncompletedPaid()
         {
-            var policies = _unitOfWork.PolicyRepository.Find(p => p.PolicyState != PolicyState.Approved).ToList();
+            var policies = _unitOfWork.PolicyRepository.Find(p => p.PolicyState == PolicyState.Paid
+                                                                        || p.PolicyState == PolicyState.Rejected).ToList();
             return _policyFactory.CreateDto(policies).ToList();
+        }
+
+        public byte[] GetExcelPoliciesForIssue(FilterRequestDto dto, string fileName)
+        {
+            var policies = _unitOfWork.PolicyRepository.Find(p => p.PolicyState == PolicyState.Approved
+                                                                && p.InsertDate.Date >= dto.FromDateTime.Date
+                                                                && p.InsertDate.Date <= dto.ToDateTime.Date)
+                .Include(p => p.City).ThenInclude(p => p.Province)
+                .Include(p => p.Model).ThenInclude(p => p.Brand).ToList();
+
+            var excelData = policies.Select(p => new FannavaranExcelDto()
+            {
+                PersonKind = 46.ToString(),
+                PersonName = p.Firstname,
+                PersonLName = p.Lastname,
+                IsIranian = 1.ToString(),
+                // Nationality =
+                CodeMelli = p.NationalCode,
+                // UnIranianCode =
+                PersonJens = GetFannavaranGender(p.Gender).ToString(),
+                BirthYear = p.BirthDate.GetJalaliYear(),
+                // GElhNo =
+                BirthMonth = p.BirthDate.GetJalaliMonth(),
+                BirthDay = p.BirthDate.GetJalaliDay(),
+                IdentityNo = p.ShenasnameNo.ToString(),
+                SodurPlace = p.City.Name,
+                FatherName = p.FatherName,
+                // Economic =
+                // CompanyCode =
+                // SabtNo =
+                Tel = "88888888",
+                Mobile = p.Mobile,
+                // CodePosti = p. todo
+                PersonAddress = p.Address,
+                PayerPersonKind = "46",
+                PayerPersonName = p.Firstname,
+                PayerPersonLName = p.Lastname,
+                // PayerNationality =
+                PayerCodeMelli = p.NationalCode,
+                // PayerUnIranianCode =
+                PayerPersonJens = GetFannavaranGender(p.Gender).ToString(),
+
+                PayerBirthYear = p.BirthDate.GetJalaliYear(),
+                PayerBirthMonth = p.BirthDate.GetJalaliMonth(),
+                PayerBirthDay = p.BirthDate.GetJalaliDay(),
+
+                PayerIdentityNo = p.ShenasnameNo.ToString(),
+                PayerSodurPlace = p.City.Name,
+                PayerFatherName = p.FatherName,
+                // PayerEconomic =
+                // PayerCompanyCode =
+                // PayerSabtNo =
+
+                PayerMobile = p.Mobile,
+                PayerTel = "88888888",
+                // PayerCodePosti = todo
+                PayerPersonAddress = p.Address,
+                BeginDate = p.InsertDate.ToJalaliDate(),
+                EndDate = p.InsertDate.AddYears(1).ToJalaliDate(),
+
+                // LastBimeCompany =
+                // ExtendedBNNo =
+                // InternalOldBId =
+                // ExtendedBNNo =
+                TakhfifPercent = p.DiscountPercent.ToString(),
+                // FishNo =
+                // FishDate =
+                // Bank =
+                // BankBranch =
+                // BankBranchNumber =
+                Name = p.Model.Name,
+                Brand = p.Model.Brand.Name,
+                SerialNo = p.Imei,
+
+                // ManufactureYear = p. todo
+
+                PartOneSarmaye = p.Price.ToString(),
+                NerkhPartOne = p.PremiumRate.ToString(),
+                PartOneHB = p.FinalPremium.ToString(),
+
+                // PartTwoSarmaye =
+                // FranshizDarsadPartTwo =
+                // MinFranshizPartTwo =
+                // PartTwoHB =
+
+                FillPayerFromBimegozar = "1"
+            })
+                .ToList();
+            var result = ExportToExcel.ExportToXlsx(excelData, fileName);
+            return result;
+        }
+
+        private int GetFannavaranGender(Gender gender)
+        {
+            if (gender == Gender.Man)
+            {
+                return 26; //man
+            }
+            else
+            {
+                return 27; //woman
+            }
         }
 
         public async Task<FailedStateValidationDto> ValidateAsync(long id, FailedStateValidationDto dto)
@@ -86,6 +189,10 @@ namespace Otter.Business.Implementations.Services
             if (policy == null)
             {
                 throw new EntityNotFoundException("یافت نشد.");
+            }
+            if (policy.PolicyState < PolicyState.Paid)
+            {
+                throw new EntityNotFoundException("بیمه نامه پرداخت نشده است.");
             }
 
             if (dto.MicrophoneTestState || dto.CameraFileState ||
@@ -119,6 +226,27 @@ namespace Otter.Business.Implementations.Services
             _unitOfWork.Commit();
 
             return dto;
+        }
+
+        public bool Validate(List<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var policy = _unitOfWork.PolicyRepository.Find(p => p.Id == id)
+                    .FirstOrDefault();
+                if (policy == null)
+                {
+                    throw new EntityNotFoundException("یافت نشد.");
+                }
+                if (policy.PolicyState < PolicyState.Paid)
+                {
+                    throw new EntityNotFoundException("بیمه نامه پرداخت نشده است.");
+                }
+                policy.PolicyState = PolicyState.Approved;
+                _unitOfWork.Commit();
+            }
+
+            return true;
         }
 
         public async Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto)
@@ -507,108 +635,6 @@ namespace Otter.Business.Implementations.Services
             _unitOfWork.Commit();
 
             return _policyFactory.CreateDto(policy);
-        }
-
-        public byte[] GetExcelPoliciesForIssue(FilterRequestDto dto, string fileName)
-        {
-            var policies = _unitOfWork.PolicyRepository.Find(p => p.PolicyState == PolicyState.Approved
-                                                                && p.InsertDate.Date >= dto.FromDateTime.Date
-                                                                && p.InsertDate.Date <= dto.ToDateTime)
-                .Include(p => p.City).ThenInclude(p => p.Province)
-                .Include(p => p.Model).ThenInclude(p => p.Brand).ToList();
-
-            var excelData = policies.Select(p => new FannavaranExcelDto()
-            {
-                PersonKind = 46.ToString(),
-                PersonName = p.Firstname,
-                PersonLName = p.Lastname,
-                IsIranian = 1.ToString(),
-                // Nationality =
-                CodeMelli = p.NationalCode,
-                // UnIranianCode =
-                PersonJens = GetFannavaranGender(p.Gender).ToString(),
-                BirthYear = p.BirthDate.GetJalaliYear(),
-                // GElhNo =
-                BirthMonth = p.BirthDate.GetJalaliMonth(),
-                BirthDay = p.BirthDate.GetJalaliDay(),
-                IdentityNo = p.ShenasnameNo.ToString(),
-                SodurPlace = p.City.Name,
-                FatherName = p.FatherName,
-                // Economic =
-                // CompanyCode =
-                // SabtNo =
-                Tel = "88888888",
-                Mobile = p.Mobile,
-                // CodePosti = p. todo
-                PersonAddress = p.Address,
-                PayerPersonKind = "46",
-                PayerPersonName = p.Firstname,
-                PayerPersonLName = p.Lastname,
-                // PayerNationality =
-                PayerCodeMelli = p.NationalCode,
-                // PayerUnIranianCode =
-                PayerPersonJens = GetFannavaranGender(p.Gender).ToString(),
-
-                PayerBirthYear = p.BirthDate.GetJalaliYear(),
-                PayerBirthMonth = p.BirthDate.GetJalaliMonth(),
-                PayerBirthDay = p.BirthDate.GetJalaliDay(),
-
-                PayerIdentityNo = p.ShenasnameNo.ToString(),
-                PayerSodurPlace = p.City.Name,
-                PayerFatherName = p.FatherName,
-                // PayerEconomic =
-                // PayerCompanyCode =
-                // PayerSabtNo =
-
-                PayerMobile = p.Mobile,
-                PayerTel = "88888888",
-                // PayerCodePosti = todo
-                PayerPersonAddress = p.Address,
-                BeginDate = p.InsertDate.ToJalaliDate(),
-                EndDate = p.InsertDate.AddYears(1).ToJalaliDate(),
-
-                // LastBimeCompany =
-                // ExtendedBNNo =
-                // InternalOldBId =
-                // ExtendedBNNo =
-                TakhfifPercent = p.DiscountPercent.ToString(),
-                // FishNo =
-                // FishDate =
-                // Bank =
-                // BankBranch =
-                // BankBranchNumber =
-                Name = p.Model.Name,
-                Brand = p.Model.Brand.Name,
-                SerialNo = p.Imei,
-
-                // ManufactureYear = p. todo
-
-                PartOneSarmaye = p.Price.ToString(),
-                NerkhPartOne = p.PremiumRate.ToString(),
-                PartOneHB = p.FinalPremium.ToString(),
-
-                // PartTwoSarmaye =
-                // FranshizDarsadPartTwo =
-                // MinFranshizPartTwo =
-                // PartTwoHB =
-
-                FillPayerFromBimegozar = "1"
-            })
-                .ToList();
-            var result = ExportToExcel.ExportToXlsx(excelData, fileName);
-            return result;
-        }
-
-        private int GetFannavaranGender(Gender gender)
-        {
-            if (gender == Gender.Man)
-            {
-                return 26; //man
-            }
-            else
-            {
-                return 27; //woman
-            }
         }
     }
 }

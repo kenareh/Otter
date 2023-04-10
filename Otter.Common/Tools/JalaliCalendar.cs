@@ -57,23 +57,47 @@ namespace Otter.Common.Tools
 
         public static string GetJalaliDay(this DateTime dateTime)
         {
-            var value = dateTime.ToJalaliDate().Substring(8, 2);
+            try
+            {
+                var value = dateTime.ToJalaliDate().Substring(8, 2);
 
-            return value;
+                return value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public static string GetJalaliMonth(this DateTime dateTime)
         {
-            var value = dateTime.ToJalaliDate().Substring(5, 2);
+            try
+            {
+                var value = dateTime.ToJalaliDate().Substring(5, 2);
 
-            return value;
+                return value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public static string GetJalaliYear(this DateTime dateTime)
         {
-            var value = dateTime.ToJalaliDate().Substring(0, 4);
+            try
+            {
+                var value = dateTime.ToJalaliDate().Substring(0, 4);
 
-            return value;
+                return value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

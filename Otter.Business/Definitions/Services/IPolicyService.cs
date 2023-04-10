@@ -11,9 +11,13 @@ namespace Otter.Business.Definitions.Services
 
         List<PolicyDto> Get(FilterRequestDto dto);
 
-        List<PolicyDto> GetUncompleted();
+        List<PolicyDto> GetUncompletedPaid();
+
+        byte[] GetExcelPoliciesForIssue(FilterRequestDto dto, string fileName);
 
         Task<FailedStateValidationDto> ValidateAsync(long id, FailedStateValidationDto dto);
+
+        bool Validate(List<long> ids);
 
         Task<Guid> InsertBasicInformation(BasicInformationRequestDto dto);
 
@@ -48,7 +52,5 @@ namespace Otter.Business.Definitions.Services
         List<PolicyFileDto> GetCameraFiles(Guid guid);
 
         Task<PolicyDto> InsertPersonalInformationAsync(Guid guid, PersonalInfoDto dto);
-
-        byte[] GetExcelPoliciesForIssue(FilterRequestDto dto, string fileName);
     }
 }
