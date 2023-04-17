@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Otter.Common.Entities;
 using Otter.Common.Enums;
 
@@ -50,7 +51,11 @@ namespace Otter.Business.Dtos
         public bool PhoneFileBoxState { get; set; }
         public bool CameraFileState { get; set; }
         public string MarketerCode { get; set; }
+        public bool IsSendTrackingSms { get; set; }
 
+        public string ShortUrl { get; set; }
+
+        public DateTime InsertDate { get; set; }
         public BaseEnumDto PolicyState { get; set; }
         public long ModelId { get; set; }
         public long CityId { get; set; }
